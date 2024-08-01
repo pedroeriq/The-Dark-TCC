@@ -1,32 +1,78 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float jumpForce = 5f;
-    public Rigidbody2D rb;
-    public Transform groundCheck; 
-    public LayerMask groundLayer; 
+    public float speed;
+    public float jumpForce;
 
-    private Vector2 movement;
-    private bool isGrounded;
+    private bool isJumping;
+    private Animator anim;
+    private Rigidbody2D rig;
+
+    void Start()
+    {
+        anim = GetComponent<Animator>();
+        rig = GetComponent<Rigidbody2D>();
+    }
 
     void Update()
     {
-        movement.x = Input.GetAxisRaw("Horizontal");
+        Move();
+        Jump();
+    }
 
-        
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    void Move()
+    {
+        float movement = Input.GetAxis("Horizontal");
 
-       
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
-            rb.AddForce(new Vector2(0f, jumpForce), ForceMode2D.Impulse);
+            movement = -1;
+        }
+        else if (Input.GetKey(KeyCode.RightArrow))
+        {
+            movement = 1;
+        }
+        else
+        {
+            movement = 0;
+        }
+
+        rig.velocity = new Vector2(movement * speed, rig.velocity.y);
+
+        if (movement != 0)
+        {
+            if (!isJumping)
+            {
+                anim.SetInteger("transition", 1);
+            }
+        }
+
+        if (movement == 0 && !isJumping)
+        {
+            anim.SetInteger("transition", 0);
         }
     }
 
-    void FixedUpdate()
+    void Jump()
     {
-        rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            if (!isJumping && Mathf.Abs(rig.velocity.y) < 0.01f)
+            {
+                anim.SetInteger("transition", 2);
+                rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+                isJumping = true;
+            }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == 3 && Mathf.Abs(rig.velocity.y) < 0.01f)
+        {
+            isJumping = false;
+        }
     }
 }
