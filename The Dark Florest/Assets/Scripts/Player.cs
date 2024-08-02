@@ -1,25 +1,22 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
     public float speed;
-    public float jumpForce;
+    public float jumpForce; // Adiciona uma variável para a força do pulo
 
-    private bool isJumping;
-    private Animator anim;
     private Rigidbody2D rig;
+    private bool isGrounded; // Adiciona uma variável para verificar se o jogador está no chão
 
     void Start()
     {
-        anim = GetComponent<Animator>();
         rig = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
         Move();
-        Jump();
+        Jump(); // Chama a função de pulo na atualização
     }
 
     void Move()
@@ -40,39 +37,31 @@ public class Player : MonoBehaviour
         }
 
         rig.velocity = new Vector2(movement * speed, rig.velocity.y);
-
-        if (movement != 0)
-        {
-            if (!isJumping)
-            {
-                anim.SetInteger("transition", 1);
-            }
-        }
-
-        if (movement == 0 && !isJumping)
-        {
-            anim.SetInteger("transition", 0);
-        }
     }
 
     void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        // Verifica se o jogador está no chão e a seta para cima é pressionada
+        if (isGrounded && Input.GetKeyDown(KeyCode.UpArrow))
         {
-            if (!isJumping && Mathf.Abs(rig.velocity.y) < 0.01f)
-            {
-                anim.SetInteger("transition", 2);
-                rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-                isJumping = true;
-            }
+            rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
         }
     }
 
+    // Detecta colisão com o chão para determinar se o jogador está no chão
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == 3 && Mathf.Abs(rig.velocity.y) < 0.01f)
+        if (collision.gameObject.CompareTag("Ground"))
         {
-            isJumping = false;
+            isGrounded = true;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
         }
     }
 }
