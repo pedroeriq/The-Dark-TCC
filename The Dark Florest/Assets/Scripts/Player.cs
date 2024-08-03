@@ -3,20 +3,32 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public float speed;
-    public float jumpForce; // Adiciona uma variável para a força do pulo
+    public float jumpForce;
+    public GameObject bulletPrefab;
+    public GameObject specialBulletPrefab;
+    public int specialAmmoLimit = 5;
+    public int maxHealth = 100;
+    public int enemyDamage = 10; // Adiciona uma variável pública para o dano que o jogador sofrerá ao colidir com inimigos
 
     private Rigidbody2D rig;
-    private bool isGrounded; // Adiciona uma variável para verificar se o jogador está no chão
+    private bool isGrounded;
+    private bool hasSpecialAmmo;
+    private int specialAmmoCount;
+    private int currentHealth;
 
     void Start()
     {
         rig = GetComponent<Rigidbody2D>();
+        hasSpecialAmmo = false;
+        specialAmmoCount = 0;
+        currentHealth = maxHealth;
     }
 
     void Update()
     {
         Move();
-        Jump(); // Chama a função de pulo na atualização
+        Jump();
+        Shoot();
     }
 
     void Move()
@@ -41,19 +53,41 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        // Verifica se o jogador está no chão e a seta para cima é pressionada
         if (isGrounded && Input.GetKeyDown(KeyCode.UpArrow))
         {
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
         }
     }
 
-    // Detecta colisão com o chão para determinar se o jogador está no chão
+    void Shoot()
+    {
+        if (Input.GetKeyDown(KeyCode.C) && hasSpecialAmmo && specialAmmoCount > 0)
+        {
+            Vector3 spawnPosition = transform.position + transform.right * 1.0f;
+            Instantiate(specialBulletPrefab, spawnPosition, Quaternion.identity);
+            specialAmmoCount--;
+
+            if (specialAmmoCount <= 0)
+            {
+                hasSpecialAmmo = false;
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Vector3 spawnPosition = transform.position + transform.right * 1.0f;
+            Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+        }
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage(enemyDamage); // Usa a variável pública para aplicar dano
         }
     }
 
@@ -62,6 +96,25 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.CompareTag("SpecialAmmo"))
+        {
+            hasSpecialAmmo = true;
+            specialAmmoCount = specialAmmoLimit;
+            Destroy(collider.gameObject);
+        }
+    }
+
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            Destroy(gameObject);
         }
     }
 }

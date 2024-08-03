@@ -3,7 +3,12 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Ground
+  - Enemy
+  - "Muni\xE7\xE3o Especial"
+  - SpecialAmmo
+  - Bala
   layers:
   - Default
   - TransparentFX

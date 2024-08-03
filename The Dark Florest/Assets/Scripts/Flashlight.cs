@@ -2,12 +2,26 @@ using UnityEngine;
 
 public class FlashlightController : MonoBehaviour
 {
-    public Transform player; // Referência ao Transform do Player
-    public Vector3 offset;   // Offset da posição relativa ao Player
     public GameObject flashlightPrefab; // Prefab da lanterna
     public float flashlightDuration = 5f; // Duração da lanterna no jogo
+    public Vector3 offset = new Vector3(0, 1.5f, 0); // Offset da posição relativa ao Player
 
     private GameObject currentFlashlight; // Referência à lanterna instanciada
+    private Transform playerTransform; // Referência ao Transform do Player
+
+    void Start()
+    {
+        // Busca o objeto do jogador pela tag
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerTransform = player.transform;
+        }
+        else
+        {
+            Debug.LogError("Player com a tag 'Player' não encontrado na cena.");
+        }
+    }
 
     void Update()
     {
@@ -15,15 +29,14 @@ public class FlashlightController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X) && currentFlashlight == null)
         {
             // Instancia a lanterna
-            currentFlashlight = Instantiate(flashlightPrefab, player.position + offset, Quaternion.identity);
-            StartCoroutine(DestroyFlashlightAfterTime(flashlightDuration));
+            InstantiateFlashlight();
         }
+    }
 
-        // Atualiza a lanterna se ela estiver ativa
-        if (currentFlashlight != null)
-        {
-            FollowPlayer();
-        }
+    private void InstantiateFlashlight()
+    {
+        currentFlashlight = Instantiate(flashlightPrefab, playerTransform.position + offset, Quaternion.identity);
+        StartCoroutine(DestroyFlashlightAfterTime(flashlightDuration));
     }
 
     private System.Collections.IEnumerator DestroyFlashlightAfterTime(float duration)
@@ -36,12 +49,25 @@ public class FlashlightController : MonoBehaviour
         }
     }
 
+    void FixedUpdate()
+    {
+        if (currentFlashlight != null)
+        {
+            FollowPlayer();
+        }
+    }
+
     void FollowPlayer()
     {
         // Atualiza a posição da lanterna para acompanhar o Player com um offset
         if (currentFlashlight != null)
         {
-            currentFlashlight.transform.position = player.position + offset;
+            currentFlashlight.transform.position = playerTransform.position + offset;
         }
+    }
+
+    public void SetFlashlightOffset(Vector3 newOffset)
+    {
+        offset = newOffset;
     }
 }

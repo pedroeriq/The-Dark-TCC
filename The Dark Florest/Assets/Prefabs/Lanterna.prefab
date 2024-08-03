@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2486435727017725811}
   - component: {fileID: 5378011242717637371}
   - component: {fileID: 1608564115888001508}
-  - component: {fileID: 3154886650479584513}
   m_Layer: 0
   m_Name: Lanterna
   m_TagString: Untagged
@@ -27,13 +26,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4033134291802981890}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.24017505, w: 0.9707296}
+  m_LocalRotation: {x: 0, y: 0, z: -0.23081398, w: 0.9729979}
   m_LocalPosition: {x: -7.24, y: 1.13, z: 0}
   m_LocalScale: {x: 1.5299, y: 0.1895, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -27.794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -26.69}
 --- !u!212 &5378011242717637371
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -76,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5320754, g: 0.5320754, b: 0.5320754, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -120,8 +119,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 0.8779, y: -0.9077, z: 0}
-    m_Extent: {x: 2.1811, y: 2.4889, z: 0}
+    m_Center: {x: 2.0046499, y: 0.64995, z: 0}
+    m_Extent: {x: 3.30845, y: 4.41895, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -132,23 +131,8 @@ MonoBehaviour:
   m_ShapeLightFalloffSize: 1.72
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: 1.0655934, y: -1.6763828, z: 0}
-  - {x: 1.3393605, y: -0.54114306, z: 0}
+  - {x: 3.348686, y: 0.69825155, z: 0}
+  - {x: 3.593149, y: 3.3488493, z: 0}
   - {x: 0.41722307, y: -0.1395046, z: 0}
   - {x: 0.77123535, y: -0.38857898, z: 0}
---- !u!114 &3154886650479584513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4033134291802981890}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de03bc1478b52344895891aef3d4b763, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 1368526455412619267, guid: ae948c0b870c67440be452ba7bd2acd5, type: 3}
-  offset: {x: 0.5, y: 2, z: 0}
-  flashlightPrefab: {fileID: 4033134291802981890}
-  flashlightDuration: 2
+  - {x: 3.144314, y: -2.0502846, z: 0}
