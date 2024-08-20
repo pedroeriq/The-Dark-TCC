@@ -38,10 +38,12 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             movement = -1;
+            transform.eulerAngles = new Vector3(0, 180, 0); // Vira o jogador para a esquerda
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             movement = 1;
+            transform.eulerAngles = new Vector3(0, 0, 0); // Vira o jogador para a direita
         }
         else
         {
@@ -63,8 +65,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.C) && hasSpecialAmmo && specialAmmoCount > 0)
         {
-            Vector3 spawnPosition = transform.position + transform.right * 1.0f;
-            Instantiate(specialBulletPrefab, spawnPosition, Quaternion.identity);
+            FireBullet(specialBulletPrefab);
             specialAmmoCount--;
 
             if (specialAmmoCount <= 0)
@@ -74,8 +75,20 @@ public class Player : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.Z))
         {
-            Vector3 spawnPosition = transform.position + transform.right * 1.0f;
-            Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
+            FireBullet(bulletPrefab);
+        }
+    }
+
+    void FireBullet(GameObject bullet)
+    {
+        Vector3 spawnPosition = transform.position + transform.right * 1.0f;
+        GameObject newBullet = Instantiate(bullet, spawnPosition, Quaternion.identity);
+
+        // Define a direção da bala de acordo com a orientação do jogador
+        Bullet bulletScript = newBullet.GetComponent<Bullet>();
+        if (bulletScript != null)
+        {
+            bulletScript.SetDirection(transform.right); // Passa a direção para o script da bala
         }
     }
 

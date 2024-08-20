@@ -59,10 +59,11 @@ public class FlashlightController : MonoBehaviour
 
     void FollowPlayer()
     {
-        // Atualiza a posição da lanterna para acompanhar o Player com um offset
+        // Atualiza a posição e rotação da lanterna para acompanhar o Player com um offset
         if (currentFlashlight != null)
         {
             currentFlashlight.transform.position = playerTransform.position + offset;
+            currentFlashlight.transform.rotation = playerTransform.rotation; // Faz a lanterna acompanhar a rotação do jogador
         }
     }
 

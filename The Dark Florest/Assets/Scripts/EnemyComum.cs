@@ -26,10 +26,19 @@ public class EnemyComum : MonoBehaviour
         {
             timer = 0f;
             movingRight = !movingRight; // Troca a direção
+            Flip(); // Vira o rosto do inimigo
         }
 
         float moveDirection = movingRight ? 1f : -1f;
         transform.Translate(Vector3.right * moveDirection * moveSpeed * Time.deltaTime);
+    }
+
+    void Flip()
+    {
+        // Inverte a escala no eixo X para virar o rosto
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
     }
 
     void OnCollisionEnter2D(Collision2D collision)

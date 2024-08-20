@@ -3,11 +3,17 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float speed = 10f; // Velocidade da bala
+    private Vector2 direction; // Direção da bala
 
     void Update()
     {
-        // Move a bala para frente
-        transform.Translate(Vector2.right * speed * Time.deltaTime);
+        // Move a bala na direção definida
+        transform.Translate(direction * speed * Time.deltaTime);
+    }
+
+    public void SetDirection(Vector2 newDirection)
+    {
+        direction = newDirection;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
