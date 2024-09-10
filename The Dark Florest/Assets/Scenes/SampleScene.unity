@@ -1290,7 +1290,6 @@ GameObject:
   - component: {fileID: 1962276551}
   - component: {fileID: 1962276550}
   - component: {fileID: 1962276549}
-  - component: {fileID: 1962276553}
   - component: {fileID: 1962276554}
   m_Layer: 0
   m_Name: Enemy
@@ -1439,25 +1438,6 @@ Transform:
   - {fileID: 2099217936}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1962276553
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1962276548}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3d4a464f33118f4a817c61d7a3bf743, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 2
-  changeDirectionTime: 2
-  health: 5
-  normalDamage: 1
-  specialDamage: 3
-  player: {fileID: 7071973294589199906, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
-  detectionRange: 5
 --- !u!114 &1962276554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1471,9 +1451,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distancia: 4
-  speed: 5
+  speed: 3
   playerPos: {fileID: 844480760}
   flyRB: {fileID: 1962276549}
+  campoDeVisao: 4
+  vida: 5
+  danoNormal: 1
+  danoEspecial: 2
 --- !u!1001 &2087834699
 PrefabInstance:
   m_ObjectHideFlags: 0

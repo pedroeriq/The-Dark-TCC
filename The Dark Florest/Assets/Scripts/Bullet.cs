@@ -3,8 +3,15 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float speed = 10f; // Velocidade da bala
-    public int damage = 10; // Adiciona uma variável de dano
+    public int damage = 10; // Dano da bala
+    public float lifetime = 5f; // Tempo de vida da bala em segundos
     private Vector2 direction; // Direção da bala
+
+    void Start()
+    {
+        // Destrói a bala após 'lifetime' segundos
+        Destroy(gameObject, lifetime);
+    }
 
     void Update()
     {
@@ -22,7 +29,7 @@ public class Bullet : MonoBehaviour
         // Verifica se a colisão é com um objeto com a tag "Enemy"
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // Destrói a bala ao colidir com o inimigo
         }
     }
 }
