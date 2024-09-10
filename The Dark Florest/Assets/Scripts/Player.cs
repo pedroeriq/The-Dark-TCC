@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI; // Necessário para acessar o componente Image
 
 public class Player : MonoBehaviour
 {
@@ -8,13 +9,18 @@ public class Player : MonoBehaviour
     public GameObject specialBulletPrefab;
     public int specialAmmoLimit = 5;
     public int maxHealth = 100;
-    public int enemyDamage = 10; // Adiciona uma variável pública para o dano que o jogador sofrerá ao colidir com inimigos
+    public int enemyDamage = 10;
+
+    public Image healthBarFill; // Referência para a barra de vida
+    public Transform spawnPoint; // Referência para o ponto de renascimento
+    public Transform checkpointPoint; // Referência para o ponto de checkpoint
 
     private Rigidbody2D rig;
     private bool isGrounded;
     private bool hasSpecialAmmo;
     private int specialAmmoCount;
-    private int currentHealth;
+    private float currentHealth; // Alterado para float
+    private bool checkpointActivated; // Indica se o checkpoint foi ativado
 
     void Start()
     {
@@ -22,6 +28,11 @@ public class Player : MonoBehaviour
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
         currentHealth = maxHealth;
+        UpdateHealthBar(); // Atualiza a barra de saúde na inicialização
+
+        // Define checkpointPoint como null para garantir que não há ponto de checkpoint ativo inicialmente
+        checkpointActivated = false;
+        checkpointPoint = null;
     }
 
     void Update()
@@ -38,12 +49,12 @@ public class Player : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             movement = -1;
-            transform.eulerAngles = new Vector3(0, 180, 0); // Vira o jogador para a esquerda
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             movement = 1;
-            transform.eulerAngles = new Vector3(0, 0, 0); // Vira o jogador para a direita
+            transform.eulerAngles = new Vector3(0, 0, 0);
         }
         else
         {
@@ -84,11 +95,10 @@ public class Player : MonoBehaviour
         Vector3 spawnPosition = transform.position + transform.right * 1.0f;
         GameObject newBullet = Instantiate(bullet, spawnPosition, Quaternion.identity);
 
-        // Define a direção da bala de acordo com a orientação do jogador
         Bullet bulletScript = newBullet.GetComponent<Bullet>();
         if (bulletScript != null)
         {
-            bulletScript.SetDirection(transform.right); // Passa a direção para o script da bala
+            bulletScript.SetDirection(transform.right);
         }
     }
 
@@ -100,7 +110,7 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
-            TakeDamage(enemyDamage); // Usa a variável pública para aplicar dano
+            TakeDamage(enemyDamage);
         }
     }
 
@@ -120,14 +130,54 @@ public class Player : MonoBehaviour
             specialAmmoCount = specialAmmoLimit;
             Destroy(collider.gameObject);
         }
+        else if (collider.CompareTag("Checkpoint") && !checkpointActivated)
+        {
+            checkpointActivated = true; // Marca o checkpoint como ativado
+            checkpointPoint = collider.transform; // Define o ponto de checkpoint quando o jogador colide com um checkpoint
+        }
     }
 
-    void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
-            Destroy(gameObject);
+            currentHealth = 0;
+            Die(); // Chama o método Die quando a saúde chega a 0
         }
+        UpdateHealthBar(); // Atualiza a barra de saúde após receber dano
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthBarFill != null)
+        {
+            healthBarFill.fillAmount = currentHealth / maxHealth; // Atualiza o preenchimento da barra de saúde
+        }
+    }
+
+    private void Die()
+    {
+        // Você pode adicionar aqui qualquer efeito visual ou sonoro para a morte
+        Respawn(); // Chama o método Respawn para renascer o jogador
+    }
+
+    private void Respawn()
+    {
+        // Verifica se há um ponto de renascimento definido
+        if (checkpointActivated && checkpointPoint != null)
+        {
+            // Reposiciona o jogador na posição do checkpoint
+            transform.position = checkpointPoint.position;
+        }
+        else
+        {
+            // Caso não haja checkpoint ativado, usa o ponto de spawn
+            transform.position = spawnPoint.position;
+        }
+
+        // Restaura a saúde
+        currentHealth = maxHealth;
+        UpdateHealthBar(); // Atualiza a barra de saúde após renascer
     }
 }

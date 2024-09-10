@@ -9,6 +9,8 @@ TagManager:
   - "Muni\xE7\xE3o Especial"
   - SpecialAmmo
   - Bala
+  - Lanterna
+  - Checkpoint
   layers:
   - Default
   - TransparentFX
@@ -16,8 +18,8 @@ TagManager:
   - "Ch\xE3o"
   - Water
   - UI
-  - 
-  - 
+  - Sombra Errante
+  - Shadow
   - 
   - 
   - 

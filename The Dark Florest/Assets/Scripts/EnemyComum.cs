@@ -9,13 +9,28 @@ public class EnemyComum : MonoBehaviour
     public int health = 3; // Vida do inimigo
     public int normalDamage = 1; // Dano causado por balas normais
     public int specialDamage = 3; // Dano causado por special ammo
+    public Transform player; // Referência ao jogador
+    public float detectionRange = 5f; // Distância máxima para detectar o jogador
 
     private bool movingRight = true; // Direção atual do movimento
     private float timer = 0f; // Temporizador para a mudança de direção
 
     void Update()
     {
-        MoveEnemy();
+        if (PlayerInRange())
+        {
+            MoveTowardsPlayer();
+        }
+        else
+        {
+            MoveEnemy();
+        }
+    }
+
+    bool PlayerInRange()
+    {
+        // Verifica a distância entre o inimigo e o jogador
+        return Vector2.Distance(transform.position, player.position) <= detectionRange;
     }
 
     void MoveEnemy()
@@ -33,12 +48,26 @@ public class EnemyComum : MonoBehaviour
         transform.Translate(Vector3.right * moveDirection * moveSpeed * Time.deltaTime);
     }
 
+    void MoveTowardsPlayer()
+    {
+        // Calcula a direção para o jogador
+        Vector2 direction = (player.position - transform.position).normalized;
+        transform.Translate(direction * moveSpeed * Time.deltaTime);
+        
+        // Vira o inimigo para o lado do jogador
+        if (direction.x > 0 && !movingRight || direction.x < 0 && movingRight)
+        {
+            Flip();
+        }
+    }
+
     void Flip()
     {
         // Inverte a escala no eixo X para virar o rosto
         Vector3 theScale = transform.localScale;
         theScale.x *= -1;
         transform.localScale = theScale;
+        movingRight = !movingRight;
     }
 
     void OnCollisionEnter2D(Collision2D collision)

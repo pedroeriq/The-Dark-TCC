@@ -3,6 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float speed = 10f; // Velocidade da bala
+    public int damage = 10; // Adiciona uma variável de dano
     private Vector2 direction; // Direção da bala
 
     void Update()
