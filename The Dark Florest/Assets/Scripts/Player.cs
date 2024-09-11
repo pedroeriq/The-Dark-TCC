@@ -21,6 +21,7 @@ public class Player : MonoBehaviour
     private int specialAmmoCount;
     private float currentHealth; // Alterado para float
     private bool checkpointActivated; // Indica se o checkpoint foi ativado
+    private Animator Anim; 
 
     void Start()
     {
@@ -28,6 +29,7 @@ public class Player : MonoBehaviour
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
         currentHealth = maxHealth;
+        TryGetComponent(out Anim);
         UpdateHealthBar(); // Atualiza a barra de saúde na inicialização
 
         // Define checkpointPoint como null para garantir que não há ponto de checkpoint ativo inicialmente
@@ -107,6 +109,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = true;
+            Anim.SetBool("isGrounded", isGrounded);
         }
         else if (collision.gameObject.CompareTag("Enemy"))
         {
@@ -119,6 +122,7 @@ public class Player : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isGrounded = false;
+            Anim.SetBool("isGrounded", isGrounded);
         }
     }
 
