@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class SpecialBullet : Bullet
 {
-    public float lifetime = 5f; // Tempo de vida da bala especial em segundos
+    public float specialLifetime = 5f; // Tempo de vida da bala especial em segundos
 
-    void Start()
+    protected override void Start()
     {
-        // Destrói a bala especial após 'lifetime' segundos
-        Destroy(gameObject, lifetime);
+        // Destrói a bala especial após 'specialLifetime' segundos
+        Destroy(gameObject, specialLifetime);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

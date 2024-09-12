@@ -1859,37 +1859,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 5
---- !u!1 &1877430081
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1877430082}
-  m_Layer: 0
-  m_Name: Frente
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1877430082
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1877430081}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.061, y: 0.056, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 844480760}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1962276548
 GameObject:
   m_ObjectHideFlags: 0
@@ -1904,6 +1873,7 @@ GameObject:
   - component: {fileID: 1962276549}
   - component: {fileID: 1962276554}
   - component: {fileID: 1962276555}
+  - component: {fileID: 1962276556}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -2091,6 +2061,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1962276556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1962276548}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fb198589e0820548b1e0763aa0010d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  alvo: {fileID: 844480760}
+  velocidadedeMovimento: 2
+  rigibody: {fileID: 1962276549}
 --- !u!114 &2048370363 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1282222078399267736, guid: 62894dd3099515941940dd89e0fe8bac, type: 3}
@@ -2492,10 +2477,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1332771979636010974, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 7071973294589199906, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1877430082}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 362436803043817822, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
       insertIndex: -1

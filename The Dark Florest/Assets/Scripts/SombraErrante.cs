@@ -60,7 +60,18 @@ public class SombraErrante : MonoBehaviour
     private void Seguir()
     {
         // Movimento em direção ao player
+        Vector2 direcao = (playerPos.position - transform.position).normalized;
         transform.position = Vector2.MoveTowards(transform.position, playerPos.position, speed * Time.deltaTime);
+
+        // Altera o flip do sprite com base na direção do movimento
+        if (direcao.x > 0)
+        {
+            spriteRenderer.flipX = false;  // Inimigo se movendo para a direita
+        }
+        else if (direcao.x < 0)
+        {
+            spriteRenderer.flipX = true;   // Inimigo se movendo para a esquerda
+        }
     }
 
     // Função para aplicar dano à sombra

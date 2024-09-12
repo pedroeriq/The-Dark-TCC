@@ -3,11 +3,11 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float speed = 10f; // Velocidade da bala
-    public int damage = 10; // Dano da bala
     public float lifetime = 5f; // Tempo de vida da bala em segundos
+    public int damage = 10; // Dano da bala
     private Vector2 direction; // Direção da bala
 
-    void Start()
+    protected virtual void Start()
     {
         // Destrói a bala após 'lifetime' segundos
         Destroy(gameObject, lifetime);
