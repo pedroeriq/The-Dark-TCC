@@ -1,29 +1,41 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyComum : MonoBehaviour
 {
-    public float moveSpeed = 2f; // Velocidade do movimento do inimigo
-    public float changeDirectionTime = 3f; // Tempo para mudar a direção
-    public int health = 3; // Vida do inimigo
-    public int normalDamage = 1; // Dano causado por balas normais
-    public int specialDamage = 3; // Dano causado por special ammo
-    public Transform player; // Referência ao jogador
-    public float detectionRange = 5f; // Distância máxima para detectar o jogador
+    public Transform player;                     // Referência ao jogador
+    public float moveSpeed = 2f;                 // Velocidade do movimento do inimigo
+    public float detectionRange = 5f;            // Distância máxima para detectar o jogador
+    public float stopDistance = 2f;              // Distância mínima para parar de se mover
+    public float attackRange = 1f;               // Distância de ataque (não usada aqui, mas para referência futura)
+    public float attackCooldown = 1f;            // Tempo entre ataques (não usado aqui, mas para referência futura)
+    public Transform areaLimit;                  // Área que limita o movimento do inimigo (não usado aqui, mas para referência futura)
 
-    private bool movingRight = true; // Direção atual do movimento
-    private float timer = 0f; // Temporizador para a mudança de direção
+    private float lastAttackTime;                // Tempo do último ataque (não usado aqui, mas para referência futura)
+    private SpriteRenderer spriteRenderer;       // Referência ao SpriteRenderer para controlar a aparência do inimigo
+
+    void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
 
     void Update()
     {
         if (PlayerInRange())
         {
-            MoveTowardsPlayer();
-        }
-        else
-        {
-            MoveEnemy();
+            Vector3 directionToPlayer = player.position - transform.position; // Direção em relação ao jogador
+            float distanceToPlayer = directionToPlayer.magnitude;            // Distância até o jogador
+
+            if (distanceToPlayer > stopDistance)
+            {
+                // Move o inimigo em direção ao jogador
+                transform.position = Vector3.MoveTowards(transform.position, player.position, moveSpeed * Time.deltaTime);
+            }
+
+            // Atualiza a rotação para sempre olhar para o jogador
+            UpdateRotation(directionToPlayer);
+
+            // Inverte a direção do sprite do inimigo com base na direção em relação ao jogador
+            spriteRenderer.flipX = directionToPlayer.x < 0;
         }
     }
 
@@ -33,64 +45,25 @@ public class EnemyComum : MonoBehaviour
         return Vector2.Distance(transform.position, player.position) <= detectionRange;
     }
 
-    void MoveEnemy()
+    void UpdateRotation(Vector3 direction)
     {
-        timer += Time.deltaTime;
-
-        if (timer >= changeDirectionTime)
-        {
-            timer = 0f;
-            movingRight = !movingRight; // Troca a direção
-            Flip(); // Vira o rosto do inimigo
-        }
-
-        float moveDirection = movingRight ? 1f : -1f;
-        transform.Translate(Vector3.right * moveDirection * moveSpeed * Time.deltaTime);
+        // Calcula o ângulo necessário para que o inimigo olhe na direção do jogador
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90));
+        // Ajuste a subtração de 90 graus conforme necessário para alinhar corretamente o sprite
     }
 
-    void MoveTowardsPlayer()
+    private void OnDrawGizmos()
     {
-        // Calcula a direção para o jogador
-        Vector2 direction = (player.position - transform.position).normalized;
-        transform.Translate(direction * moveSpeed * Time.deltaTime);
-        
-        // Vira o inimigo para o lado do jogador
-        if (direction.x > 0 && !movingRight || direction.x < 0 && movingRight)
-        {
-            Flip();
-        }
+        // Desenha a área de detecção com Gizmos
+        Gizmos.color = Color.green; // Cor para a área de detecção
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
 
-    void Flip()
+    private void OnDrawGizmosSelected()
     {
-        // Inverte a escala no eixo X para virar o rosto
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
-        movingRight = !movingRight;
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Bala"))
-        {
-            TakeDamage(normalDamage); // Aplica dano normal
-            Destroy(collision.gameObject); // Destrói o objeto da bala
-        }
-        else if (collision.gameObject.CompareTag("SpecialAmmo"))
-        {
-            TakeDamage(specialDamage); // Aplica dano especial
-            Destroy(collision.gameObject); // Destrói o objeto do special ammo
-        }
-    }
-
-    void TakeDamage(int damage)
-    {
-        health -= damage;
-
-        if (health <= 0)
-        {
-            Destroy(gameObject); // Destrói o inimigo quando a vida chega a 0
-        }
+        // Desenha a área de detecção quando o objeto está selecionado
+        Gizmos.color = Color.yellow; // Cor para a área de detecção quando selecionado
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
 }

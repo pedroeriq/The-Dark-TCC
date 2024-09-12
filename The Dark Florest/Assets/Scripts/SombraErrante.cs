@@ -34,9 +34,7 @@ public class SombraErrante : MonoBehaviour
         // Se a sombra ainda não foi revelada e o player está dentro do campo de visão
         if (!sombraRevelada && distancia < campoDeVisao)
         {
-            spriteRenderer.enabled = true;  // Torna a sombra visível
-            sombraRevelada = true;  // Marca que a sombra foi revelada
-            podeReceberDano = true;  // Agora a sombra pode receber dano
+            RevelarSombra();
         }
 
         // Se a sombra foi revelada, ela segue o player
@@ -52,6 +50,13 @@ public class SombraErrante : MonoBehaviour
         }
     }
 
+    private void RevelarSombra()
+    {
+        spriteRenderer.enabled = true;  // Torna a sombra visível
+        sombraRevelada = true;  // Marca que a sombra foi revelada
+        podeReceberDano = true;  // Agora a sombra pode receber dano
+    }
+
     private void Seguir()
     {
         // Movimento em direção ao player
@@ -65,25 +70,20 @@ public class SombraErrante : MonoBehaviour
         if (podeReceberDano)
         {
             vida -= dano;  // Reduz a vida da sombra
-            Debug.Log("Sombra recebeu " + dano + " de dano. Vida restante: " + vida);
-        }
-        else
-        {
-            Debug.Log("Sombra está invisível e não pode receber dano.");
+            // Use o Debug.Log com moderação ou apenas em fases de desenvolvimento
+            Debug.Log($"Sombra recebeu {dano} de dano. Vida restante: {vida}");
         }
     }
 
     // Lida com colisões
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Verifica se colidiu com uma bala normal
+        // Aplica dano baseado na tag do objeto colidido
         if (collision.gameObject.CompareTag("Bala"))
         {
             ReceberDano(danoNormal);  // Aplica o dano normal
         }
-
-        // Verifica se colidiu com uma bala especial
-        if (collision.gameObject.CompareTag("SpecialAmmo"))
+        else if (collision.gameObject.CompareTag("SpecialAmmo"))
         {
             ReceberDano(danoEspecial);  // Aplica o dano especial (dano extra)
         }
