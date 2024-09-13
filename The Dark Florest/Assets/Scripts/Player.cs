@@ -6,7 +6,6 @@ using TMPro; // Necessário para acessar o TextMesh Pro
 public class Player : MonoBehaviour
 {
     public TMP_Text moedaTXT; // Mudado para TMP_Text
-    private int moeda;
     
     public float speed;
     public float jumpForce;
@@ -30,22 +29,22 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        moeda = 0;
         rig = GetComponent<Rigidbody2D>();
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
         currentHealth = maxHealth;
         TryGetComponent(out Anim);
         UpdateHealthBar(); // Atualiza a barra de saúde na inicialização
-
-        // Define checkpointPoint como null para garantir que não há ponto de checkpoint ativo inicialmente
         checkpointActivated = false;
         checkpointPoint = null;
+
+        // Atualiza o texto de moedas no início
+        moedaTXT.text = CoinManager.instance.GetMoeda().ToString();
     }
 
     void Update()
     {
-        moedaTXT.text = moeda.ToString();
+        moedaTXT.text = CoinManager.instance.GetMoeda().ToString();
         Move();
         Jump();
         Shoot();
@@ -141,7 +140,8 @@ public class Player : MonoBehaviour
     {
         if (collider.gameObject.CompareTag("Moeda"))
         {
-            moeda = moeda +1;
+            CoinManager.instance.AddMoeda(1); // Usa o CoinManager para adicionar moedas
+            moedaTXT.text = CoinManager.instance.GetMoeda().ToString(); // Atualiza o texto
             Destroy(collider.gameObject);
         }
         if (collider.CompareTag("SpecialAmmo"))
