@@ -1,8 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI; // Necessário para acessar o componente Image
+using TMPro; // Necessário para acessar o TextMesh Pro
+
 
 public class Player : MonoBehaviour
 {
+    public TMP_Text moedaTXT; // Mudado para TMP_Text
+    private int moeda;
+    
     public float speed;
     public float jumpForce;
     public GameObject bulletPrefab;
@@ -25,6 +30,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        moeda = 0;
         rig = GetComponent<Rigidbody2D>();
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
@@ -39,6 +45,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        moedaTXT.text = moeda.ToString();
         Move();
         Jump();
         Shoot();
@@ -115,6 +122,10 @@ public class Player : MonoBehaviour
         {
             TakeDamage(enemyDamage);
         }
+        else if (collision.gameObject.CompareTag("Bloco"))
+        {
+            TakeDamage(enemyDamage);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
@@ -128,6 +139,11 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        if (collider.gameObject.CompareTag("Moeda"))
+        {
+            moeda = moeda +1;
+            Destroy(collider.gameObject);
+        }
         if (collider.CompareTag("SpecialAmmo"))
         {
             hasSpecialAmmo = true;

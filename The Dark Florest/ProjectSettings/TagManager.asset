@@ -11,6 +11,8 @@ TagManager:
   - Bala
   - Lanterna
   - Checkpoint
+  - Moeda
+  - Bloco
   layers:
   - Default
   - TransparentFX
