@@ -1,13 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI; // Necessário para acessar o componente Image
-using TMPro; // Necessário para acessar o TextMesh Pro
-
+using UnityEngine.UI;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
-    public TMP_Text moedaTXT; // Mudado para TMP_Text
-    private int moeda;
-    
     public float speed;
     public float jumpForce;
     public GameObject bulletPrefab;
@@ -16,36 +12,29 @@ public class Player : MonoBehaviour
     public int maxHealth = 100;
     public int enemyDamage = 10;
 
-    public Image healthBarFill; // Referência para a barra de vida
-    public Transform spawnPoint; // Referência para o ponto de renascimento
-    public Transform checkpointPoint; // Referência para o ponto de checkpoint
+    public Image healthBarFill;
 
     private Rigidbody2D rig;
     private bool isGrounded;
     private bool hasSpecialAmmo;
     private int specialAmmoCount;
-    private float currentHealth; // Alterado para float
-    private bool checkpointActivated; // Indica se o checkpoint foi ativado
-    private Animator Anim; 
+    private float currentHealth;
+    private Animator Anim;
 
     void Start()
     {
-        moeda = 0;
         rig = GetComponent<Rigidbody2D>();
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
         currentHealth = maxHealth;
         TryGetComponent(out Anim);
-        UpdateHealthBar(); // Atualiza a barra de saúde na inicialização
+        UpdateHealthBar();
+        CheckpointManager.Instance.lastCheckpointPosition = transform.position;
 
-        // Define checkpointPoint como null para garantir que não há ponto de checkpoint ativo inicialmente
-        checkpointActivated = false;
-        checkpointPoint = null;
     }
 
     void Update()
     {
-        moedaTXT.text = moeda.ToString();
         Move();
         Jump();
         Shoot();
@@ -78,6 +67,13 @@ public class Player : MonoBehaviour
         if (isGrounded && Input.GetKeyDown(KeyCode.UpArrow))
         {
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            ParticleObserver.OnParticleSpawEvent(transform.position); // Correção para o evento de partículas
+        
+            // Chama o evento para tocar o som de pulo
+            if (AudioObserver.instance != null)
+            {
+                AudioObserver.TriggerPlaySfx("pulo"); // Assume que o som de pulo é identificado por "pulo"
+            }
         }
     }
 
@@ -139,21 +135,12 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.gameObject.CompareTag("Moeda"))
-        {
-            moeda = moeda +1;
-            Destroy(collider.gameObject);
-        }
+        
         if (collider.CompareTag("SpecialAmmo"))
         {
             hasSpecialAmmo = true;
             specialAmmoCount = specialAmmoLimit;
             Destroy(collider.gameObject);
-        }
-        else if (collider.CompareTag("Checkpoint") && !checkpointActivated)
-        {
-            checkpointActivated = true; // Marca o checkpoint como ativado
-            checkpointPoint = collider.transform; // Define o ponto de checkpoint quando o jogador colide com um checkpoint
         }
     }
 
@@ -163,41 +150,30 @@ public class Player : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            Die(); // Chama o método Die quando a saúde chega a 0
+            Die();
         }
-        UpdateHealthBar(); // Atualiza a barra de saúde após receber dano
+        UpdateHealthBar();
     }
 
     private void UpdateHealthBar()
     {
         if (healthBarFill != null)
         {
-            healthBarFill.fillAmount = currentHealth / maxHealth; // Atualiza o preenchimento da barra de saúde
+            healthBarFill.fillAmount = currentHealth / maxHealth;
         }
     }
 
     private void Die()
     {
-        // Você pode adicionar aqui qualquer efeito visual ou sonoro para a morte
-        Respawn(); // Chama o método Respawn para renascer o jogador
+        Respawn();
     }
 
     private void Respawn()
     {
-        // Verifica se há um ponto de renascimento definido
-        if (checkpointActivated && checkpointPoint != null)
-        {
-            // Reposiciona o jogador na posição do checkpoint
-            transform.position = checkpointPoint.position;
-        }
-        else
-        {
-            // Caso não haja checkpoint ativado, usa o ponto de spawn
-            transform.position = spawnPoint.position;
-        }
-
-        // Restaura a saúde
+        // Use o método público para obter a última posição de checkpoint
+        Vector3 respawnPosition = CheckpointManager.Instance.GetLastCheckpointPosition();
+        transform.position = respawnPosition;
         currentHealth = maxHealth;
-        UpdateHealthBar(); // Atualiza a barra de saúde após renascer
+        UpdateHealthBar();
     }
 }
