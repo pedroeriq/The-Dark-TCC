@@ -1,12 +1,11 @@
 using UnityEngine;
-using UnityEngine.UI; // Necessário para acessar o componente Image
-using TMPro; // Necessário para acessar o TextMesh Pro
-
+using UnityEngine.UI;
+using TMPro;
+using Unity.VisualScripting;
+using System.Collections; // Necessário para usar Coroutines
 
 public class Player : MonoBehaviour
 {
-    public TMP_Text moedaTXT; // Mudado para TMP_Text
-    
     public float speed;
     public float jumpForce;
     public GameObject bulletPrefab;
@@ -15,17 +14,16 @@ public class Player : MonoBehaviour
     public int maxHealth = 100;
     public int enemyDamage = 10;
 
-    public Image healthBarFill; // Referência para a barra de vida
-    public Transform spawnPoint; // Referência para o ponto de renascimento
-    public Transform checkpointPoint; // Referência para o ponto de checkpoint
+    public Image healthBarFill;
 
     private Rigidbody2D rig;
     private bool isGrounded;
     private bool hasSpecialAmmo;
     private int specialAmmoCount;
-    private float currentHealth; // Alterado para float
-    private bool checkpointActivated; // Indica se o checkpoint foi ativado
-    private Animator Anim; 
+    private float currentHealth;
+    public Animator Anim;
+    private float movement;
+    private bool move = true;
 
     void Start()
     {
@@ -33,40 +31,51 @@ public class Player : MonoBehaviour
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
         currentHealth = maxHealth;
-        TryGetComponent(out Anim);
-        UpdateHealthBar(); // Atualiza a barra de saúde na inicialização
-        checkpointActivated = false;
-        checkpointPoint = null;
-
-        // Atualiza o texto de moedas no início
-        moedaTXT.text = CoinManager.instance.GetMoeda().ToString();
+        Anim = GetComponent<Animator>();
+        UpdateHealthBar();
+        CheckpointManager.Instance.lastCheckpointPosition = transform.position;
     }
 
     void Update()
     {
-        moedaTXT.text = CoinManager.instance.GetMoeda().ToString();
-        Move();
-        Jump();
-        Shoot();
+        if (move == true)
+        {
+            Move();
+            Jump();
+            Shoot();
+
+            // Controle das animações por transições
+            if (!isGrounded) 
+            {
+                // Se não estiver no chão, define a animação de pulo
+                Anim.SetInteger("transition", 2);
+            }
+            else if (movement != 0) 
+            {
+                // Se estiver se movendo e no chão, define a animação de corrida
+                Anim.SetInteger("transition", 1);
+            }
+            else
+            {
+                // Se não estiver se movendo, define a animação de idle
+                Anim.SetInteger("transition", 0);
+            }
+        }
+        
+        
     }
 
     void Move()
     {
-        float movement = Input.GetAxis("Horizontal");
+        movement = Input.GetAxis("Horizontal");
 
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (movement < 0)
         {
-            movement = -1;
-            transform.eulerAngles = new Vector3(0, 180, 0);
+            transform.eulerAngles = new Vector3(0, 180, 0); // Virando para esquerda
         }
-        else if (Input.GetKey(KeyCode.RightArrow))
+        else if (movement > 0)
         {
-            movement = 1;
-            transform.eulerAngles = new Vector3(0, 0, 0);
-        }
-        else
-        {
-            movement = 0;
+            transform.eulerAngles = new Vector3(0, 0, 0); // Virando para direita
         }
 
         rig.velocity = new Vector2(movement * speed, rig.velocity.y);
@@ -77,6 +86,12 @@ public class Player : MonoBehaviour
         if (isGrounded && Input.GetKeyDown(KeyCode.UpArrow))
         {
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
+            ParticleObserver.OnParticleSpawEvent(transform.position);
+        
+            if (AudioObserver.instance != null)
+            {
+                AudioObserver.TriggerPlaySfx("pulo");
+            }
         }
     }
 
@@ -138,22 +153,11 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.gameObject.CompareTag("Moeda"))
-        {
-            CoinManager.instance.AddMoeda(1); // Usa o CoinManager para adicionar moedas
-            moedaTXT.text = CoinManager.instance.GetMoeda().ToString(); // Atualiza o texto
-            Destroy(collider.gameObject);
-        }
         if (collider.CompareTag("SpecialAmmo"))
         {
             hasSpecialAmmo = true;
             specialAmmoCount = specialAmmoLimit;
             Destroy(collider.gameObject);
-        }
-        else if (collider.CompareTag("Checkpoint") && !checkpointActivated)
-        {
-            checkpointActivated = true; // Marca o checkpoint como ativado
-            checkpointPoint = collider.transform; // Define o ponto de checkpoint quando o jogador colide com um checkpoint
         }
     }
 
@@ -163,41 +167,44 @@ public class Player : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            Die(); // Chama o método Die quando a saúde chega a 0
+            Die();
         }
-        UpdateHealthBar(); // Atualiza a barra de saúde após receber dano
+        UpdateHealthBar();
     }
 
     private void UpdateHealthBar()
     {
         if (healthBarFill != null)
         {
-            healthBarFill.fillAmount = currentHealth / maxHealth; // Atualiza o preenchimento da barra de saúde
+            healthBarFill.fillAmount = currentHealth / maxHealth;
         }
     }
 
     private void Die()
     {
-        // Você pode adicionar aqui qualquer efeito visual ou sonoro para a morte
-        Respawn(); // Chama o método Respawn para renascer o jogador
+        // Inicia a rotina de morte, que inclui a animação e o respawn
+        StartCoroutine(HandleDeath());
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        // Define a animação de morte (transition 3)
+        Anim.SetTrigger("Dead");
+        move = false;
+        // Espera alguns segundos (ajuste conforme necessário)
+        yield return new WaitForSeconds(2.0f);
+        move = true;
+
+        // Respawn após a animação de morte
+        Respawn();
     }
 
     private void Respawn()
     {
-        // Verifica se há um ponto de renascimento definido
-        if (checkpointActivated && checkpointPoint != null)
-        {
-            // Reposiciona o jogador na posição do checkpoint
-            transform.position = checkpointPoint.position;
-        }
-        else
-        {
-            // Caso não haja checkpoint ativado, usa o ponto de spawn
-            transform.position = spawnPoint.position;
-        }
-
-        // Restaura a saúde
+        // Usa o método para obter a última posição de checkpoint
+        Vector3 respawnPosition = CheckpointManager.Instance.GetLastCheckpointPosition();
+        transform.position = respawnPosition;
         currentHealth = maxHealth;
-        UpdateHealthBar(); // Atualiza a barra de saúde após renascer
+        UpdateHealthBar();
     }
 }
