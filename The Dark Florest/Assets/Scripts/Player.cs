@@ -1,8 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
-using System.Collections; // Necessário para usar Coroutines
 
 public class Player : MonoBehaviour
 {
@@ -21,9 +19,7 @@ public class Player : MonoBehaviour
     private bool hasSpecialAmmo;
     private int specialAmmoCount;
     private float currentHealth;
-    public Animator Anim;
-    private float movement;
-    private bool move = true;
+    private Animator Anim;
 
     void Start()
     {
@@ -31,51 +27,36 @@ public class Player : MonoBehaviour
         hasSpecialAmmo = false;
         specialAmmoCount = 0;
         currentHealth = maxHealth;
-        Anim = GetComponent<Animator>();
+        TryGetComponent(out Anim);
         UpdateHealthBar();
         CheckpointManager.Instance.lastCheckpointPosition = transform.position;
+
     }
 
     void Update()
     {
-        if (move == true)
-        {
-            Move();
-            Jump();
-            Shoot();
-
-            // Controle das animações por transições
-            if (!isGrounded) 
-            {
-                // Se não estiver no chão, define a animação de pulo
-                Anim.SetInteger("transition", 2);
-            }
-            else if (movement != 0) 
-            {
-                // Se estiver se movendo e no chão, define a animação de corrida
-                Anim.SetInteger("transition", 1);
-            }
-            else
-            {
-                // Se não estiver se movendo, define a animação de idle
-                Anim.SetInteger("transition", 0);
-            }
-        }
-        
-        
+        Move();
+        Jump();
+        Shoot();
     }
 
     void Move()
     {
-        movement = Input.GetAxis("Horizontal");
+        float movement = Input.GetAxis("Horizontal");
 
-        if (movement < 0)
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.eulerAngles = new Vector3(0, 180, 0); // Virando para esquerda
+            movement = -1;
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
-        else if (movement > 0)
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.eulerAngles = new Vector3(0, 0, 0); // Virando para direita
+            movement = 1;
+            transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            movement = 0;
         }
 
         rig.velocity = new Vector2(movement * speed, rig.velocity.y);
@@ -86,11 +67,12 @@ public class Player : MonoBehaviour
         if (isGrounded && Input.GetKeyDown(KeyCode.UpArrow))
         {
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            ParticleObserver.OnParticleSpawEvent(transform.position);
+            ParticleObserver.OnParticleSpawEvent(transform.position); // Correção para o evento de partículas
         
+            // Chama o evento para tocar o som de pulo
             if (AudioObserver.instance != null)
             {
-                AudioObserver.TriggerPlaySfx("pulo");
+                AudioObserver.TriggerPlaySfx("pulo"); // Assume que o som de pulo é identificado por "pulo"
             }
         }
     }
@@ -153,6 +135,7 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        
         if (collider.CompareTag("SpecialAmmo"))
         {
             hasSpecialAmmo = true;
@@ -182,26 +165,12 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        // Inicia a rotina de morte, que inclui a animação e o respawn
-        StartCoroutine(HandleDeath());
-    }
-
-    private IEnumerator HandleDeath()
-    {
-        // Define a animação de morte (transition 3)
-        Anim.SetTrigger("Dead");
-        move = false;
-        // Espera alguns segundos (ajuste conforme necessário)
-        yield return new WaitForSeconds(2.0f);
-        move = true;
-
-        // Respawn após a animação de morte
         Respawn();
     }
 
     private void Respawn()
     {
-        // Usa o método para obter a última posição de checkpoint
+        // Use o método público para obter a última posição de checkpoint
         Vector3 respawnPosition = CheckpointManager.Instance.GetLastCheckpointPosition();
         transform.position = respawnPosition;
         currentHealth = maxHealth;
