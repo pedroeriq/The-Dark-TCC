@@ -148,7 +148,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.00000023841858, y: -0.018306255}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -159,7 +159,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.0732255, y: 1.0366125}
   m_EdgeRadius: 0
 --- !u!1 &3115160052883090280
 GameObject:
@@ -798,7 +798,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.013364553, y: -1.7374239}
+  m_Offset: {x: 0.029166222, y: -2.1196852}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -809,7 +809,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.0267291, y: 4.474848}
+  m_Size: {x: 1.6009035, y: 5.2393703}
   m_EdgeRadius: 0
 --- !u!114 &7828477405831127632
 MonoBehaviour:
@@ -825,5 +825,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blocoPrefab: {fileID: 8233857490713720968}
   pontoA: {fileID: 5585287644994917249}
-  pontoInicial: {fileID: 7486035979292913920}
   speedMove: 2
+  returnDelay: 0.1
+  returnSpeed: 0.5

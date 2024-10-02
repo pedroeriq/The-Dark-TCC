@@ -8,7 +8,7 @@ public class GameController : MonoBehaviour
     public TMP_Text moedaTXT; // Texto para mostrar as moedas na tela
     public GameObject playerPrefab; // Prefab do jogador para respawn
     public int playerLife = 3; // Vida do jogador
-    private int moedas; // Contador de moedas
+    public int moedas; // Contador de moedas
     private bool isPlayerDead = false; // Estado do jogador
 
     void Awake()
@@ -48,7 +48,7 @@ public class GameController : MonoBehaviour
     {
         if (moedaTXT != null)
         {
-            moedaTXT.text = "Moedas: " + moedas.ToString();
+            moedaTXT.text = "" + moedas.ToString();
         }
     }
 
