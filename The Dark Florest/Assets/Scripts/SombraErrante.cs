@@ -106,4 +106,5 @@ public class SombraErrante : MonoBehaviour
         Debug.Log("Sombra destruída!");
         Destroy(gameObject);  // Destrói o objeto da sombra
     }
+    
 }
