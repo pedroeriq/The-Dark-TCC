@@ -45,12 +45,12 @@ public class Player : MonoBehaviour
             Shoot();
 
             // Controle das animações por transições
-            if (!isGrounded) 
+            if (!isGrounded)
             {
                 // Se não estiver no chão, define a animação de pulo
                 Anim.SetInteger("transition", 2);
             }
-            else if (movement != 0) 
+            else if (movement != 0)
             {
                 // Se estiver se movendo e no chão, define a animação de corrida
                 Anim.SetInteger("transition", 1);
@@ -61,8 +61,6 @@ public class Player : MonoBehaviour
                 Anim.SetInteger("transition", 0);
             }
         }
-        
-        
     }
 
     void Move()
@@ -87,7 +85,7 @@ public class Player : MonoBehaviour
         {
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             ParticleObserver.OnParticleSpawEvent(transform.position);
-        
+
             if (AudioObserver.instance != null)
             {
                 AudioObserver.TriggerPlaySfx("pulo");
@@ -206,5 +204,16 @@ public class Player : MonoBehaviour
         transform.position = respawnPosition;
         currentHealth = maxHealth;
         UpdateHealthBar();
+    }
+
+    // Novos métodos para controlar o movimento
+    public void SetMove(bool canMove)
+    {
+        move = canMove;
+    }
+
+    public bool GetMove()
+    {
+        return move;
     }
 }
