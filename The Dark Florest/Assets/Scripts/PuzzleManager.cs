@@ -8,7 +8,7 @@ public class PuzzleManager : MonoBehaviour
     public LeverControl[] levers; // Array que conterá as alavancas
 
     // Padrão correto: aqui, por exemplo, o padrão é Direita (1), Reta (0), Esquerda (-1), Direita (1)
-    public int[] correctPattern = { 1, 0, -1, 1 };
+    public int[] correctPattern = { 1, 1, 1, 1 };
 
     void Update()
     {
@@ -21,10 +21,10 @@ public class PuzzleManager : MonoBehaviour
 
         for (int i = 0; i < levers.Length; i++)
         {
-            Debug.Log("Estado da alavanca " + (i + 1) + ": " +
-                      levers[i].GetLeverState()); // Adiciona logs do estado das alavancas
+            //Debug.Log("Estado da alavanca " + (i + 1) + ": " +
+                      //levers[i].GetLeverState()); // Adiciona logs do estado das alavancas
 
-            if (levers[i].GetLeverState() != correctPattern[i])
+            //if (levers[i].GetLeverState() != correctPattern[i])
             {
                 isCorrect = false;
                 break; // Sai do loop se algum estado não estiver correto

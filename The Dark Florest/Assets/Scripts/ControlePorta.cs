@@ -13,7 +13,7 @@ public class ControlePorta : MonoBehaviour
     // A sequência correta de estados das alavancas (por exemplo: [1, 2, 3, 0])
     private int[] sequenciaCorreta = { 1, 2, 3, 0 };
     private int[] sequenciaJogador = new int[4]; // Sequência que o jogador ativou
-    private int indiceAtualAlavanca = 0;         // Índice da alavanca sendo modificada
+    //private int indiceAtualAlavanca = 0;         // Índice da alavanca sendo modificada
 
     // Referência às alavancas
     public LeverControl alavanca1;
@@ -32,10 +32,10 @@ public class ControlePorta : MonoBehaviour
         if (!portaAberta)
         {
             // Verifica o estado das alavancas e atualiza a sequência do jogador
-            sequenciaJogador[0] = alavanca1.GetLeverState();
-            sequenciaJogador[1] = alavanca2.GetLeverState();
-            sequenciaJogador[2] = alavanca3.GetLeverState();
-            sequenciaJogador[3] = alavanca4.GetLeverState();
+            //sequenciaJogador[0] = alavanca1.ControlePorta();
+            //sequenciaJogador[1] = alavanca2.GetLeverState();
+            //sequenciaJogador[2] = alavanca3.GetLeverState();
+            //sequenciaJogador[3] = alavanca4.GetLeverState();
 
             // Checa se a sequência do jogador corresponde à sequência correta
             if (VerificarSequencia())
