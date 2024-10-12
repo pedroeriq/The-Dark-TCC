@@ -4,25 +4,24 @@ using UnityEngine;
 
 public class LeverControl : MonoBehaviour
 {
-    public Sprite leverUp1;  // Primeira posição reta (inicial)
-    public Sprite leverUp2;  // Segunda posição reta (para evitar conflito)
-    public Sprite leverRight; // Sprite da alavanca para a direita
-    public Sprite leverLeft;  // Sprite da alavanca para a esquerda
-    
+    public Sprite redLever;    // Sprite da alavanca na cor vermelha
+    public Sprite greenLever;  // Sprite da alavanca na cor verde
+    public Sprite blueLever;   // Sprite da alavanca na cor azul
+    public Sprite yellowLever; // Sprite da alavanca na cor amarela
+
     public int GetLeverState()
     {
         return leverState; // Retorna o estado atual da alavanca
     }
-    
 
     private SpriteRenderer spriteRenderer;
     private bool isNearLever = false; // Verifica se o player está perto da alavanca
-    private int leverState = 0; // 0 = reta (inicial), 1 = direita, 2 = reta (após direita), 3 = esquerda
+    private int leverState = 0; // 0 = Vermelho, 1 = Verde, 2 = Azul, 3 = Amarelo
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = leverUp1; // Alavanca começa reta
+        spriteRenderer.sprite = redLever; // Alavanca começa vermelha
     }
 
     void Update()
@@ -35,26 +34,26 @@ public class LeverControl : MonoBehaviour
 
     void ToggleLever()
     {
-        // Alterna entre os estados: reta (1) -> direita -> reta (2) -> esquerda -> reta (1)
-        if (leverState == 0) 
+        // Alterna entre os estados: Vermelho -> Verde -> Azul -> Amarelo -> Vermelho
+        if (leverState == 0)
         {
-            leverState = 1; // Vai para a direita
-            spriteRenderer.sprite = leverRight;
+            leverState = 1; // Vai para Verde
+            spriteRenderer.sprite = greenLever;
         }
-        else if (leverState == 1) 
+        else if (leverState == 1)
         {
-            leverState = 2; // Volta para a posição reta (segunda versão)
-            spriteRenderer.sprite = leverUp2;
+            leverState = 2; // Vai para Azul
+            spriteRenderer.sprite = blueLever;
         }
         else if (leverState == 2)
         {
-            leverState = 3; // Vai para a esquerda
-            spriteRenderer.sprite = leverLeft;
+            leverState = 3; // Vai para Amarelo
+            spriteRenderer.sprite = yellowLever;
         }
         else if (leverState == 3)
         {
-            leverState = 0; // Volta para a posição reta (primeira versão)
-            spriteRenderer.sprite = leverUp1;
+            leverState = 0; // Volta para Vermelho
+            spriteRenderer.sprite = redLever;
         }
     }
 

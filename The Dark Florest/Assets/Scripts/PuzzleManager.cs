@@ -6,9 +6,18 @@ public class PuzzleManager : MonoBehaviour
 {
     // Referência para as 4 alavancas
     public LeverControl[] levers; // Array que conterá as alavancas
+    public SpriteRenderer doorSpriteRenderer; // Referência ao SpriteRenderer da porta
+    public Sprite doorOpen;   // Sprite da porta aberta
+    public Sprite doorClosed; // Sprite da porta fechada
 
-    // Padrão correto: aqui, por exemplo, o padrão é Direita (1), Reta (0), Esquerda (-1), Direita (1)
-    public int[] correctPattern = { 1, 1, 1, 1 };
+    // Padrão correto: por exemplo, Vermelho (0), Verde (1), Azul (2), Amarelo (3)
+    public int[] correctPattern = { 0, 1, 2, 3 };
+
+    void Start()
+    {
+        // Porta começa fechada
+        doorSpriteRenderer.sprite = doorClosed;
+    }
 
     void Update()
     {
@@ -21,10 +30,7 @@ public class PuzzleManager : MonoBehaviour
 
         for (int i = 0; i < levers.Length; i++)
         {
-            //Debug.Log("Estado da alavanca " + (i + 1) + ": " +
-                      //levers[i].GetLeverState()); // Adiciona logs do estado das alavancas
-
-            //if (levers[i].GetLeverState() != correctPattern[i])
+            if (levers[i].GetLeverState() != correctPattern[i])
             {
                 isCorrect = false;
                 break; // Sai do loop se algum estado não estiver correto
@@ -34,10 +40,11 @@ public class PuzzleManager : MonoBehaviour
         if (isCorrect)
         {
             Debug.Log("Parabéns! Você acertou o padrão e a porta abriu.");
+            doorSpriteRenderer.sprite = doorOpen; // Abre a porta
         }
         else
         {
-            Debug.Log("O padrão ainda está errado.");
+            doorSpriteRenderer.sprite = doorClosed; // Mantém a porta fechada
         }
     }
 }
