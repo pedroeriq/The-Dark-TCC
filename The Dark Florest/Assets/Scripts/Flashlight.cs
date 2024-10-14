@@ -4,7 +4,7 @@ public class FlashlightController : MonoBehaviour
 {
     public GameObject flashlightPrefab; // Prefab da lanterna
     public float flashlightDuration = 5f; // Duração da lanterna no jogo
-    public Vector3 offset = new Vector3(0, 1.5f, 0); // Offset da posição relativa ao Player
+    public Vector3 offset = new Vector3(0, 2.6f, 0); // Offset da posição relativa ao Player
 
     private GameObject currentFlashlight; // Referência à lanterna instanciada
     private Transform playerTransform; // Referência ao Transform do Player
