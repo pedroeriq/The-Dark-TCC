@@ -7,6 +7,8 @@ public class Enemy2 : MonoBehaviour
     public Transform pointA; // Ponto A
     public Transform pointB; // Ponto B
     public float speed = 2f; // Velocidade do inimigo
+    public float detectionRange = 5f; // Distância de detecção do jogador
+    public Transform player; // Referência ao jogador
     private Animator animator; // Referência ao Animator
     private bool isFlipped = false; // Estado do flip
 
@@ -15,8 +17,9 @@ public class Enemy2 : MonoBehaviour
     public int danoEspecial = 2; // Dano causado por bala especial
 	public int danoPlayer = 10;
 
-    private Transform target; // Alvo atual
+    private Transform target; // Alvo atual (usado para patrulha)
     private bool podeReceberDano = true; // Flag para verificar se o inimigo pode receber dano
+    private bool isChasingPlayer = false; // Flag para verificar se o inimigo está perseguindo o jogador
 
     void Start()
     {
@@ -35,6 +38,30 @@ public class Enemy2 : MonoBehaviour
             return; // Sair do Update se o inimigo estiver morto
         }
 
+        // Verifica se o jogador está dentro da área entre A e B
+        if (PlayerInRange())
+        {
+            isChasingPlayer = true; // Perseguir o jogador
+        }
+        else
+        {
+            isChasingPlayer = false; // Voltar ao comportamento normal
+        }
+
+        // Se o inimigo está perseguindo o jogador, ir em direção ao jogador
+        if (isChasingPlayer)
+        {
+            ChasePlayer();
+        }
+        else
+        {
+            PatrolBetweenPoints();
+        }
+    }
+
+    // Função para patrulhar entre os pontos A e B
+    private void PatrolBetweenPoints()
+    {
         // Calcular a distância até o alvo
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
@@ -54,6 +81,27 @@ public class Enemy2 : MonoBehaviour
 
             // Atualizar o flip dependendo da direção do movimento
             UpdateFlip();
+        }
+    }
+
+    // Função para mover o inimigo em direção ao jogador
+    private void ChasePlayer()
+    {
+        // Definir a animação de movimento 'run'
+        animator.SetInteger("transition", 1); // Transition para 'run'
+
+        // Mover em direção ao jogador
+        Vector3 directionToPlayer = player.position - transform.position;
+        transform.position = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+
+        // Atualizar o flip dependendo da direção
+        if (directionToPlayer.x < 0 && !isFlipped)
+        {
+            Flip();
+        }
+        else if (directionToPlayer.x > 0 && isFlipped)
+        {
+            Flip();
         }
     }
 
@@ -82,6 +130,13 @@ public class Enemy2 : MonoBehaviour
         Vector3 localScale = transform.localScale;
         localScale.x *= -1; // Inverter o eixo X para flipar o sprite
         transform.localScale = localScale;
+    }
+
+    private bool PlayerInRange()
+    {
+        // Verifica se o jogador está dentro da área entre os pontos A e B
+        return player.position.x > pointA.position.x && player.position.x < pointB.position.x
+            && Vector2.Distance(transform.position, player.position) <= detectionRange;
     }
 
     public void ReceberDano(int dano)
@@ -134,28 +189,10 @@ public class Enemy2 : MonoBehaviour
         }
     }
 
-    // Coroutine para restaurar a velocidade após um delay
     private IEnumerator RestoreSpeedAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         speed = 2f; // Restaura a velocidade original do inimigo
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        Debug.Log($"Colidiu com: {collision.gameObject.name}"); // Log para ver o que está colidindo
-
-        // Aplica dano baseado na tag do objeto colidido
-        if (collision.gameObject.CompareTag("Bala"))
-        {
-            ReceberDano(danoNormal); // Aplica o dano normal
-            Destroy(collision.gameObject); // Opcional: destrói a bala após o impacto
-        }
-        else if (collision.gameObject.CompareTag("SpecialAmmo"))
-        {
-            ReceberDano(danoEspecial); // Aplica o dano especial (dano extra)
-            Destroy(collision.gameObject); // Opcional: destrói a bala especial após o impacto
-        }
     }
 
     private void DestruirInimigo()

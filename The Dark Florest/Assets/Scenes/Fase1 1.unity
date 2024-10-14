@@ -168,6 +168,9 @@ MonoBehaviour:
   - {fileID: 2048370363}
   - {fileID: 954911735}
   - {fileID: 1928588}
+  doorSpriteRenderer: {fileID: 0}
+  doorOpen: {fileID: 0}
+  doorClosed: {fileID: 0}
   correctPattern: 01000000010000000300000001000000
 --- !u!4 &101909053
 Transform:
@@ -1085,13 +1088,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0e938d93fdaaa4c92a301df09934dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PortaFechada: {fileID: 1076242624, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  PortaAberta: {fileID: 380816093, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  leverUp1: {fileID: 21300000, guid: 2824b86ff3dd8f14eb2fb8d776edc505, type: 3}
-  leverUp2: {fileID: 21300000, guid: 5c67e55a577d0bc4d84ff9efcfe9df1f, type: 3}
-  leverRight: {fileID: 21300000, guid: 56335e843ceff4c4495fd46ad2e24591, type: 3}
-  leverLeft: {fileID: 21300000, guid: 1083b3e26f4d44741acede806dd79b02, type: 3}
-  door: {fileID: 1627055039}
+  redLever: {fileID: 0}
+  greenLever: {fileID: 0}
+  blueLever: {fileID: 0}
+  yellowLever: {fileID: 0}
 --- !u!61 &499095310
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1336,7 +1336,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.6537886, y: -0.73201, z: -10}
+  m_LocalPosition: {x: -4.4604845, y: -0.73568, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -2208,13 +2208,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0e938d93fdaaa4c92a301df09934dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PortaFechada: {fileID: 1076242624, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  PortaAberta: {fileID: 380816093, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  leverUp1: {fileID: 21300000, guid: 2824b86ff3dd8f14eb2fb8d776edc505, type: 3}
-  leverUp2: {fileID: 21300000, guid: 5c67e55a577d0bc4d84ff9efcfe9df1f, type: 3}
-  leverRight: {fileID: 21300000, guid: 56335e843ceff4c4495fd46ad2e24591, type: 3}
-  leverLeft: {fileID: 21300000, guid: 1083b3e26f4d44741acede806dd79b02, type: 3}
-  door: {fileID: 1627055039}
+  redLever: {fileID: 0}
+  greenLever: {fileID: 0}
+  blueLever: {fileID: 0}
+  yellowLever: {fileID: 0}
 --- !u!61 &1016057921
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3069,13 +3066,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0e938d93fdaaa4c92a301df09934dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PortaFechada: {fileID: 1076242624, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  PortaAberta: {fileID: 380816093, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  leverUp1: {fileID: 21300000, guid: 2824b86ff3dd8f14eb2fb8d776edc505, type: 3}
-  leverUp2: {fileID: 21300000, guid: 5c67e55a577d0bc4d84ff9efcfe9df1f, type: 3}
-  leverRight: {fileID: 21300000, guid: 56335e843ceff4c4495fd46ad2e24591, type: 3}
-  leverLeft: {fileID: 21300000, guid: 1083b3e26f4d44741acede806dd79b02, type: 3}
-  door: {fileID: 1627055039}
+  redLever: {fileID: 0}
+  greenLever: {fileID: 0}
+  blueLever: {fileID: 0}
+  yellowLever: {fileID: 0}
 --- !u!61 &1423371566
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3670,13 +3664,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0e938d93fdaaa4c92a301df09934dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PortaFechada: {fileID: 1076242624, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  PortaAberta: {fileID: 380816093, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  leverUp1: {fileID: 21300000, guid: 2824b86ff3dd8f14eb2fb8d776edc505, type: 3}
-  leverUp2: {fileID: 21300000, guid: 5c67e55a577d0bc4d84ff9efcfe9df1f, type: 3}
-  leverRight: {fileID: 21300000, guid: 56335e843ceff4c4495fd46ad2e24591, type: 3}
-  leverLeft: {fileID: 21300000, guid: 1083b3e26f4d44741acede806dd79b02, type: 3}
-  door: {fileID: 1627055039}
+  redLever: {fileID: 0}
+  greenLever: {fileID: 0}
+  blueLever: {fileID: 0}
+  yellowLever: {fileID: 0}
 --- !u!61 &1659536634
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4233,13 +4224,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0e938d93fdaaa4c92a301df09934dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PortaFechada: {fileID: 1076242624, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  PortaAberta: {fileID: 380816093, guid: ec0952520ede80f4084dcc4136c4776f, type: 3}
-  leverUp1: {fileID: 21300000, guid: 2824b86ff3dd8f14eb2fb8d776edc505, type: 3}
-  leverUp2: {fileID: 21300000, guid: 5c67e55a577d0bc4d84ff9efcfe9df1f, type: 3}
-  leverRight: {fileID: 21300000, guid: 56335e843ceff4c4495fd46ad2e24591, type: 3}
-  leverLeft: {fileID: 21300000, guid: 1083b3e26f4d44741acede806dd79b02, type: 3}
-  door: {fileID: 1627055039}
+  redLever: {fileID: 0}
+  greenLever: {fileID: 0}
+  blueLever: {fileID: 0}
+  yellowLever: {fileID: 0}
 --- !u!61 &1799188200
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5531,11 +5519,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6207393155689073349, guid: 775393fe714d8b742a14ab6860c35287, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.27
+      value: -8.56
       objectReference: {fileID: 0}
     - target: {fileID: 6207393155689073349, guid: 775393fe714d8b742a14ab6860c35287, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.36
+      value: -2.06
       objectReference: {fileID: 0}
     - target: {fileID: 6207393155689073349, guid: 775393fe714d8b742a14ab6860c35287, type: 3}
       propertyPath: m_LocalPosition.z

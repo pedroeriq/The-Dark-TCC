@@ -6,6 +6,11 @@ using System.Collections; // Necessário para usar Coroutines
 
 public class Player : MonoBehaviour
 {
+    public Transform FirePoint;
+    public bool isJumping;
+    public float groundCheckRadius;
+    public LayerMask groundLayer;
+    public Transform groundCheck;
     public float speed;
     public float jumpForce;
     public GameObject bulletPrefab;
@@ -43,6 +48,7 @@ public class Player : MonoBehaviour
             Move();
             Jump();
             Shoot();
+            CheckGround();
 
             // Controle das animações por transições
             if (!isGrounded)
@@ -85,6 +91,8 @@ public class Player : MonoBehaviour
         {
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             ParticleObserver.OnParticleSpawEvent(transform.position);
+            isJumping = true;
+            Anim.SetInteger("transition",2 );
 
             if (AudioObserver.instance != null)
             {
@@ -113,8 +121,7 @@ public class Player : MonoBehaviour
 
     void FireBullet(GameObject bullet)
     {
-        Vector3 spawnPosition = transform.position + transform.right * 1.0f;
-        GameObject newBullet = Instantiate(bullet, spawnPosition, Quaternion.identity);
+        GameObject newBullet = Instantiate(bullet, FirePoint.position, Quaternion.identity);
 
         Bullet bulletScript = newBullet.GetComponent<Bullet>();
         if (bulletScript != null)
@@ -125,12 +132,8 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            Anim.SetBool("isGrounded", isGrounded);
-        }
-        else if (collision.gameObject.CompareTag("Enemy"))
+        
+        if (collision.gameObject.CompareTag("Enemy"))
         {
             TakeDamage(enemyDamage);
         }
@@ -140,15 +143,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-            Anim.SetBool("isGrounded", isGrounded);
-        }
-    }
-
+    
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("SpecialAmmo"))
@@ -215,5 +210,14 @@ public class Player : MonoBehaviour
     public bool GetMove()
     {
         return move;
+    }
+    void CheckGround()
+    {
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        if (isGrounded)
+        {
+            isJumping = false;
+            
+        }
     }
 }
