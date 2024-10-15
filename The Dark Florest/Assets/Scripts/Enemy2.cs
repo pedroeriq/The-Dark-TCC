@@ -15,7 +15,7 @@ public class Enemy2 : MonoBehaviour
     public int vida = 5; // Vida inicial do inimigo
     public int danoNormal = 1; // Dano causado por bala normal
     public int danoEspecial = 2; // Dano causado por bala especial
-	public int danoPlayer = 10;
+    public int danoPlayer = 10;
 
     private Transform target; // Alvo atual (usado para patrulha)
     private bool podeReceberDano = true; // Flag para verificar se o inimigo pode receber dano
@@ -164,6 +164,19 @@ public class Enemy2 : MonoBehaviour
     {
         animator.SetTrigger("EnemyDead"); // Trigger a animação de morte
         // Desativar o inimigo ou executar outras lógicas de morte
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Aplica dano baseado na tag do objeto colidido
+        if (collision.gameObject.CompareTag("Bala"))
+        {
+            ReceberDano(danoNormal);  // Aplica o dano normal
+        }
+        else if (collision.gameObject.CompareTag("SpecialAmmo"))
+        {
+            ReceberDano(danoEspecial);  // Aplica o dano especial (dano extra)
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)

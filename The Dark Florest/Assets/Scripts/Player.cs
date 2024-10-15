@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
-using System.Collections; // Necessário para usar Coroutines
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    public Transform SpecialFirePoint;
     public Transform FirePoint;
     public bool isJumping;
     public float groundCheckRadius;
@@ -18,6 +19,9 @@ public class Player : MonoBehaviour
     public int specialAmmoLimit = 5;
     public int maxHealth = 100;
     public int enemyDamage = 10;
+    public float attackCooldown = 1f; // Tempo de espera entre os ataques
+    public float meleeAttackRange = 1f; // Alcance do ataque corpo a corpo
+    public LayerMask enemyLayers; // Camada dos inimigos
 
     public Image healthBarFill;
 
@@ -29,6 +33,8 @@ public class Player : MonoBehaviour
     public Animator Anim;
     private float movement;
     private bool move = true;
+    private bool isAttacking = false;
+    private bool canAttack = true; // Controle de cooldown
 
     void Start()
     {
@@ -43,28 +49,25 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        if (move == true)
+        if (move && !isAttacking) // Bloqueia movimento enquanto ataca
         {
             Move();
             Jump();
-            Shoot();
+            Attack(); // Ataque à distância
+            MeleeAttack(); // Ataque corpo a corpo
             CheckGround();
 
-            // Controle das animações por transições
             if (!isGrounded)
             {
-                // Se não estiver no chão, define a animação de pulo
-                Anim.SetInteger("transition", 2);
+                Anim.SetInteger("transition", 2); // Pulo
             }
             else if (movement != 0)
             {
-                // Se estiver se movendo e no chão, define a animação de corrida
-                Anim.SetInteger("transition", 1);
+                Anim.SetInteger("transition", 1); // Correndo
             }
             else
             {
-                // Se não estiver se movendo, define a animação de idle
-                Anim.SetInteger("transition", 0);
+                Anim.SetInteger("transition", 0); // Idle
             }
         }
     }
@@ -75,11 +78,11 @@ public class Player : MonoBehaviour
 
         if (movement < 0)
         {
-            transform.eulerAngles = new Vector3(0, 180, 0); // Virando para esquerda
+            transform.eulerAngles = new Vector3(0, 180, 0);
         }
         else if (movement > 0)
         {
-            transform.eulerAngles = new Vector3(0, 0, 0); // Virando para direita
+            transform.eulerAngles = new Vector3(0, 0, 0);
         }
 
         rig.velocity = new Vector2(movement * speed, rig.velocity.y);
@@ -92,7 +95,7 @@ public class Player : MonoBehaviour
             rig.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             ParticleObserver.OnParticleSpawEvent(transform.position);
             isJumping = true;
-            Anim.SetInteger("transition",2 );
+            Anim.SetInteger("transition", 2);
 
             if (AudioObserver.instance != null)
             {
@@ -101,22 +104,122 @@ public class Player : MonoBehaviour
         }
     }
 
-    void Shoot()
+    void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.C) && hasSpecialAmmo && specialAmmoCount > 0)
+        if (canAttack && Input.GetKeyDown(KeyCode.Z)) // Ataque com a tecla Z
         {
-            FireBullet(specialBulletPrefab);
-            specialAmmoCount--;
-
-            if (specialAmmoCount <= 0)
+            if (hasSpecialAmmo && specialAmmoCount > 0)
             {
-                hasSpecialAmmo = false;
+                StartCoroutine(PerformSpecialAttack()); // Ataque especial
+            }
+            else
+            {
+                StartCoroutine(PerformNormalAttack()); // Ataque normal
             }
         }
-        else if (Input.GetKeyDown(KeyCode.Z))
+    }
+
+    // Novo método para o ataque corpo a corpo
+    void MeleeAttack()
+    {
+        if (canAttack && Input.GetKeyDown(KeyCode.C)) // Ataque corpo a corpo com a tecla C
         {
-            FireBullet(bulletPrefab);
+            StartCoroutine(PerformMeleeAttack());
         }
+    }
+
+// Coroutine para realizar o ataque corpo a corpo com delay e cooldown
+    IEnumerator PerformMeleeAttack()
+    {
+        move = false;
+        rig.velocity = Vector2.zero;
+        isAttacking = true;
+        canAttack = false;
+        Anim.SetTrigger("Attack"); // Animação de ataque corpo a corpo
+
+        yield return new WaitForSeconds(0.2f); // Delay para sincronizar com a animação
+
+        // Detectar inimigos no alcance do ataque
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(FirePoint.position, meleeAttackRange, enemyLayers);
+
+        // Causar dano aos inimigos atingidos
+        foreach (Collider2D enemy in hitEnemies)
+        {
+            Debug.Log("Inimigo atingido: " + enemy.name);
+        
+            // Verifica se o objeto atingido possui o componente SombraErrante
+            SombraErrante sombra = enemy.GetComponent<SombraErrante>();
+            if (sombra != null)
+            {
+                sombra.ReceberDano(1); // Aplica 1 de dano (ou a quantidade que você quiser)
+            }
+        
+            // Verifica se o objeto atingido possui o componente Enemy2
+            Enemy2 enemy2 = enemy.GetComponent<Enemy2>();
+            if (enemy2 != null)
+            {
+                enemy2.ReceberDano(1); // Aplica 1 de dano (ou a quantidade que você quiser)
+            }
+        }
+
+        yield return new WaitForSeconds(0.5f); // Tempo adicional para completar o ataque
+
+        isAttacking = false;
+        move = true;
+
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true; // Libera novos ataques
+    }
+
+    // Coroutine para realizar o ataque normal com delay e cooldown
+    IEnumerator PerformNormalAttack()
+    {
+        move = false;
+        rig.velocity = Vector2.zero;
+        isAttacking = true;
+        canAttack = false;
+        Anim.SetTrigger("Shot"); // Animação de ataque normal
+
+        yield return new WaitForSeconds(0.2f); // Delay para sincronizar com a animação
+
+        FireBullet(bulletPrefab); // Dispara o ataque normal
+
+        yield return new WaitForSeconds(0.5f); // Tempo adicional para completar o ataque
+
+        isAttacking = false;
+        move = true;
+
+        // Aguarda o cooldown antes de permitir outro ataque
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true; // Libera novos ataques
+    }
+
+    // Coroutine para realizar o ataque especial com delay e cooldown
+    IEnumerator PerformSpecialAttack()
+    {
+        move = false;
+        rig.velocity = Vector2.zero;
+        isAttacking = true;
+        canAttack = false;
+        Anim.SetTrigger("Shot Especial"); // Animação de ataque especial
+
+        yield return new WaitForSeconds(0.2f); // Delay para sincronizar com a animação
+
+        SpecialFireBullet(specialBulletPrefab); // Dispara o ataque especial
+        specialAmmoCount--; // Reduz a contagem de munição especial
+
+        if (specialAmmoCount <= 0)
+        {
+            hasSpecialAmmo = false; // Acabou a munição especial
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        isAttacking = false;
+        move = true;
+
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true; // Libera novos ataques
     }
 
     void FireBullet(GameObject bullet)
@@ -130,9 +233,19 @@ public class Player : MonoBehaviour
         }
     }
 
+    void SpecialFireBullet(GameObject bullet)
+    {
+        GameObject newBullet = Instantiate(bullet, SpecialFirePoint.position, Quaternion.identity);
+
+        Bullet bulletScript = newBullet.GetComponent<Bullet>();
+        if (bulletScript != null)
+        {
+            bulletScript.SetDirection(transform.right);
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        
         if (collision.gameObject.CompareTag("Enemy"))
         {
             TakeDamage(enemyDamage);
@@ -143,7 +256,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("SpecialAmmo"))
@@ -163,6 +275,7 @@ public class Player : MonoBehaviour
             Die();
         }
         UpdateHealthBar();
+        
     }
 
     private void UpdateHealthBar()
@@ -175,33 +288,27 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        // Inicia a rotina de morte, que inclui a animação e o respawn
         StartCoroutine(HandleDeath());
     }
 
     private IEnumerator HandleDeath()
     {
-        // Define a animação de morte (transition 3)
         Anim.SetTrigger("Dead");
         move = false;
-        // Espera alguns segundos (ajuste conforme necessário)
         yield return new WaitForSeconds(2.0f);
         move = true;
 
-        // Respawn após a animação de morte
         Respawn();
     }
 
     private void Respawn()
     {
-        // Usa o método para obter a última posição de checkpoint
         Vector3 respawnPosition = CheckpointManager.Instance.GetLastCheckpointPosition();
         transform.position = respawnPosition;
         currentHealth = maxHealth;
         UpdateHealthBar();
     }
 
-    // Novos métodos para controlar o movimento
     public void SetMove(bool canMove)
     {
         move = canMove;
@@ -211,13 +318,22 @@ public class Player : MonoBehaviour
     {
         return move;
     }
+
     void CheckGround()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
         if (isGrounded)
         {
             isJumping = false;
-            
         }
+    }
+
+    // Visualizar o alcance do ataque corpo a corpo no editor
+    private void OnDrawGizmosSelected()
+    {
+        if (FirePoint == null)
+            return;
+
+        Gizmos.DrawWireSphere(FirePoint.position, meleeAttackRange);
     }
 }

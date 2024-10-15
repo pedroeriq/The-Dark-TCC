@@ -81,7 +81,6 @@ public class SombraErrante : MonoBehaviour
         if (podeReceberDano)
         {
             vida -= dano;  // Reduz a vida da sombra
-            // Use o Debug.Log com moderação ou apenas em fases de desenvolvimento
             Debug.Log($"Sombra recebeu {dano} de dano. Vida restante: {vida}");
         }
     }
@@ -106,5 +105,4 @@ public class SombraErrante : MonoBehaviour
         Debug.Log("Sombra destruída!");
         Destroy(gameObject);  // Destrói o objeto da sombra
     }
-    
 }
