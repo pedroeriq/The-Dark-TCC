@@ -172,10 +172,12 @@ public class Enemy2 : MonoBehaviour
         if (collision.gameObject.CompareTag("Bala"))
         {
             ReceberDano(danoNormal);  // Aplica o dano normal
+            Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("SpecialAmmo"))
         {
             ReceberDano(danoEspecial);  // Aplica o dano especial (dano extra)
+            Destroy(collision.gameObject);
         }
     }
 
