@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6399290619759295772}
   - component: {fileID: 1947018503954196598}
   - component: {fileID: 7319053176232757769}
-  - component: {fileID: 5595508547316250269}
   - component: {fileID: 5393492137351461770}
+  - component: {fileID: 7874665040727704165}
   m_Layer: 0
   m_Name: Bullet 1
   m_TagString: SpecialAmmo
@@ -114,8 +114,24 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &5595508547316250269
-CircleCollider2D:
+--- !u!114 &5393492137351461770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8026317944678733925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d559ab7278451fb4b89d566b22447ec3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 10
+  lifetime: 5
+  damage: 10
+  specialLifetime: 5
+--- !u!61 &7874665040727704165
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -146,22 +162,16 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0016836538, y: 0}
+  m_Offset: {x: -0.13288347, y: 0.005311205}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.16, y: 0.16}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.2322898
---- !u!114 &5393492137351461770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8026317944678733925}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d559ab7278451fb4b89d566b22447ec3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 10
-  lifetime: 5
-  damage: 10
-  specialLifetime: 5
+  m_Size: {x: 0.31181714, y: 0.016114408}
+  m_EdgeRadius: 0
