@@ -336,4 +336,15 @@ public class Player : MonoBehaviour
 
         Gizmos.DrawWireSphere(FirePoint.position, meleeAttackRange);
     }
+    public void Curar(int valorCura)
+    {
+        currentHealth += valorCura;
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth; // Garante que a vida não ultrapasse o máximo
+        }
+
+        UpdateHealthBar(); // Atualiza a barra de vida na interface
+    }
 }
