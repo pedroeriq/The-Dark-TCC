@@ -6,6 +6,9 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    private bool isHit = false; // Para controlar se o player está recebendo dano
+    public float knockbackForce = 5f; // Força do knockback
+    public float knockbackDuration = 0.5f; // Duração do knockback
     public Transform SpecialFirePoint;
     public Transform FirePoint;
     public bool isJumping;
@@ -248,14 +251,14 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            TakeDamage(enemyDamage);
+            Vector2 knockbackDirection = (transform.position - collision.transform.position).normalized; // Direção oposta ao inimigo
+            TakeDamage(enemyDamage, knockbackDirection); // Aplica o dano e o knockback
         }
         else if (collision.gameObject.CompareTag("Bloco"))
         {
-            TakeDamage(enemyDamage);
+            TakeDamage(enemyDamage); // Apenas aplica dano sem knockback
         }
     }
-
     private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.CompareTag("SpecialAmmo"))
@@ -266,18 +269,42 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int damage, Vector2? knockbackDirection = null)
     {
+        if (isHit) return; // Se já está em estado de "hit", não faça nada
+
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
             currentHealth = 0;
             Die();
         }
-        UpdateHealthBar();
-        
-    }
+        else
+        {
+            isHit = true; // Marca que o player está em estado de "hit"
+            Anim.SetTrigger("Hit"); // Chama a animação de hit
+            SetMove(false); // Desabilita a movimentação
 
+            if (knockbackDirection.HasValue)
+            {
+                ApplyKnockback(knockbackDirection.Value);
+                StartCoroutine(HandleKnockback());
+            }
+        }
+
+        UpdateHealthBar();
+    }
+    private IEnumerator HandleKnockback()
+    {
+        // Aguarde a duração do knockback (ajuste conforme necessário)
+        yield return new WaitForSeconds(0.5f); // Duração do knockback
+
+        // Aguarde o tempo da animação de "hit" (ajuste conforme necessário)
+        yield return new WaitForSeconds(0.5f); // Duração da animação de hit
+
+        isHit = false; // Reseta o estado de hit
+        SetMove(true); // Habilita a movimentação
+    }
     private void UpdateHealthBar()
     {
         if (healthBarFill != null)
@@ -347,4 +374,18 @@ public class Player : MonoBehaviour
 
         UpdateHealthBar(); // Atualiza a barra de vida na interface
     }
+    private void ApplyKnockback(Vector2 direction)
+    {
+        rig.velocity = Vector2.zero; // Para garantir que o jogador não se mova
+        rig.AddForce(direction * knockbackForce, ForceMode2D.Impulse); // Aplica a força de knockback
+        StartCoroutine(ResetMovementAfterKnockback());
+    }
+
+    private IEnumerator ResetMovementAfterKnockback()
+    {
+        move = false; // Bloqueia movimento
+        yield return new WaitForSeconds(knockbackDuration); // Espera a duração do knockback
+        move = true; // Libera movimento
+    }
+
 }

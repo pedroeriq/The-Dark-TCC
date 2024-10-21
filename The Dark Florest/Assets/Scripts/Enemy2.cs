@@ -183,26 +183,25 @@ public class Enemy2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Verifica se o objeto colidido é o jogador
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Colisão com o jogador detectada!"); // Log adicionado
             // Executar a animação de ataque
             animator.SetTrigger("attack"); // Transition para 'attack'
             speed = 0; // Zerar a velocidade do inimigo ao atacar
-            Debug.Log("Inimigo atacou o jogador!");
 
-            // Causa dano ao jogador
+            // Causa dano ao jogador e aplica knockback
             Player player = other.GetComponent<Player>();
             if (player != null)
             {
-                player.TakeDamage(danoPlayer); // Aplica o dano normal ao jogador
+                Vector2 knockbackDirection = (other.transform.position - transform.position).normalized; // Direção do knockback
+                player.TakeDamage(danoPlayer, knockbackDirection); // Aplica o dano e a direção de knockback
             }
 
             // Reiniciar a velocidade após 0.4 segundos
-            StartCoroutine(RestoreSpeedAfterDelay(0.4f)); // Ajuste o tempo conforme necessário
+            StartCoroutine(RestoreSpeedAfterDelay(0.2f)); // Ajuste o tempo conforme necessário
         }
     }
+
 
     private IEnumerator RestoreSpeedAfterDelay(float delay)
     {

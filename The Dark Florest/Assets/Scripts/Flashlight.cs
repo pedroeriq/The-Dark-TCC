@@ -35,7 +35,8 @@ public class FlashlightController : MonoBehaviour
 
     private void InstantiateFlashlight()
     {
-        currentFlashlight = Instantiate(flashlightPrefab, playerTransform.position + offset, Quaternion.identity);
+        // Instancia a lanterna e ajusta sua rotação para apontar para baixo
+        currentFlashlight = Instantiate(flashlightPrefab, playerTransform.position + offset, Quaternion.Euler(90f, 0f, 0f));
         StartCoroutine(DestroyFlashlightAfterTime(flashlightDuration));
     }
 
@@ -63,7 +64,7 @@ public class FlashlightController : MonoBehaviour
         if (currentFlashlight != null)
         {
             currentFlashlight.transform.position = playerTransform.position + offset;
-            currentFlashlight.transform.rotation = playerTransform.rotation; // Faz a lanterna acompanhar a rotação do jogador
+            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 320f); // Mantém a lanterna apontando para baixo enquanto segue a rotação do jogador
         }
     }
 

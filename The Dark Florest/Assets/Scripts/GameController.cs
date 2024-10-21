@@ -1,9 +1,9 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    public PauseMenu pauseMenu; // Arraste o script PauseMenu aqui no Inspector
     public static GameController instance; // Singleton instance
     public TMP_Text moedaTXT; // Texto para mostrar as moedas na tela
     public GameObject playerPrefab; // Prefab do jogador para respawn
@@ -32,10 +32,34 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space)) // Verifica se a tecla espaço foi pressionada
+        {
+            if (pauseMenu.pauseMenuUI.activeSelf)
+            {
+                pauseMenu.Resume(); // Chama Resume se o menu já estiver ativo
+            }
+            else
+            {
+                PauseGame(); // Mostra o menu de pause
+            }
+        }
+        
         if (playerLife <= 0 && !isPlayerDead)
         {
             Die();
         }
+    }
+
+    public void PauseGame()
+    {
+        Time.timeScale = 0f; // Para o tempo
+        pauseMenu.pauseMenuUI.SetActive(true); // Ativa o painel de pause
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f; // Retorna o tempo à normalidade
+        pauseMenu.pauseMenuUI.SetActive(false); // Desativa o painel de pause
     }
 
     public void AddMoeda()
