@@ -6,6 +6,9 @@ using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    public AudioSource audioTiro;
+    public AudioSource audioPulo;  // Para o som de pulo
+    public AudioSource audioCorrendo;  // Para o som de corrida
     private bool isHit = false; // Para controlar se o player está recebendo dano
     public float knockbackForce = 5f; // Força do knockback
     public float knockbackDuration = 0.5f; // Duração do knockback
@@ -89,7 +92,21 @@ public class Player : MonoBehaviour
         }
 
         rig.velocity = new Vector2(movement * speed, rig.velocity.y);
+
+        // Tocar o som de corrida enquanto o jogador está se movendo
+        if (movement != 0 && isGrounded)
+        {
+            if (audioCorrendo != null && !audioCorrendo.isPlaying)
+            {
+                audioCorrendo.Play();  // Toca o som de correndo
+            }
+        }
+        else if (audioCorrendo != null && audioCorrendo.isPlaying)
+        {
+            audioCorrendo.Stop();  // Para o som quando o jogador para de correr
+        }
     }
+
 
     void Jump()
     {
@@ -104,8 +121,14 @@ public class Player : MonoBehaviour
             {
                 AudioObserver.TriggerPlaySfx("pulo");
             }
+
+            if (audioPulo != null)
+            {
+                audioPulo.Play();  // Toca o som de pulo
+            }
         }
     }
+
 
     void Attack()
     {
@@ -114,13 +137,24 @@ public class Player : MonoBehaviour
             if (hasSpecialAmmo && specialAmmoCount > 0)
             {
                 StartCoroutine(PerformSpecialAttack()); // Ataque especial
+                if (audioTiro != null)
+                {
+                    audioTiro.Play();
+                }
             }
             else
             {
                 StartCoroutine(PerformNormalAttack()); // Ataque normal
+
+                // Reproduz o som de tiro
+                if (audioTiro != null)
+                {
+                    audioTiro.Play();
+                }
             }
         }
     }
+
 
     // Novo método para o ataque corpo a corpo
     void MeleeAttack()
