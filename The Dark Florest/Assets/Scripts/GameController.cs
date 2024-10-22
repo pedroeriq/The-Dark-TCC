@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     public int playerLife = 3; // Vida do jogador
     public int moedas; // Contador de moedas
     private bool isPlayerDead = false; // Estado do jogador
+    private bool isPaused = false; // Estado de pause
 
     void Awake()
     {
@@ -32,18 +33,11 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) // Verifica se a tecla espaço foi pressionada
+        if (Input.GetKeyDown(KeyCode.Space) && !isPaused) // Verifica se a tecla espaço foi pressionada e se o jogo não está pausado
         {
-            if (pauseMenu.pauseMenuUI.activeSelf)
-            {
-                pauseMenu.Resume(); // Chama Resume se o menu já estiver ativo
-            }
-            else
-            {
-                PauseGame(); // Mostra o menu de pause
-            }
+            PauseGame(); // Mostra o menu de pause
         }
-        
+
         if (playerLife <= 0 && !isPlayerDead)
         {
             Die();
@@ -54,12 +48,14 @@ public class GameController : MonoBehaviour
     {
         Time.timeScale = 0f; // Para o tempo
         pauseMenu.pauseMenuUI.SetActive(true); // Ativa o painel de pause
+        isPaused = true; // Define o estado como pausado
     }
 
     public void ResumeGame()
     {
         Time.timeScale = 1f; // Retorna o tempo à normalidade
         pauseMenu.pauseMenuUI.SetActive(false); // Desativa o painel de pause
+        isPaused = false; // Define o estado como não pausado
     }
 
     public void AddMoeda()
