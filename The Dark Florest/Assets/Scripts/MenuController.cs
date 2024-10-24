@@ -4,6 +4,10 @@ using UnityEngine.UI; // Para UI
 
 public class MenuController : MonoBehaviour
 {
+    public void MenuScene()
+    {
+        SceneManager.LoadScene("Menu"); // Coloque o nome da cena do seu jogo
+    }
     public void StartGame()
     {
         SceneManager.LoadScene("Fase1"); // Coloque o nome da cena do seu jogo

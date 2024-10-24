@@ -16,39 +16,37 @@ public class Enemy2 : MonoBehaviour
     public int danoNormal = 1; // Dano causado por bala normal
     public int danoEspecial = 2; // Dano causado por bala especial
     public int danoPlayer = 10;
-
+    
     private Transform target; // Alvo atual (usado para patrulha)
     private bool podeReceberDano = true; // Flag para verificar se o inimigo pode receber dano
     private bool isChasingPlayer = false; // Flag para verificar se o inimigo está perseguindo o jogador
 
+    private Coroutine attackCoroutine; // Referência à coroutine de ataque
+    public float attackCooldown = 1f; // Tempo de recarga entre ataques
+
     void Start()
     {
-        // Definir o alvo inicial como o ponto A
         target = pointA;
-        // Obter a referência ao Animator
         animator = GetComponent<Animator>();
     }
 
     void Update()
     {
-        // Verifica se o inimigo pode receber dano
         if (vida <= 0)
         {
-            DestruirInimigo(); // Se a vida acabar, destrói o inimigo
-            return; // Sair do Update se o inimigo estiver morto
+            DestruirInimigo();
+            return;
         }
 
-        // Verifica se o jogador está dentro da área entre A e B
         if (PlayerInRange())
         {
-            isChasingPlayer = true; // Perseguir o jogador
+            isChasingPlayer = true;
         }
         else
         {
-            isChasingPlayer = false; // Voltar ao comportamento normal
+            isChasingPlayer = false;
         }
 
-        // Se o inimigo está perseguindo o jogador, ir em direção ao jogador
         if (isChasingPlayer)
         {
             ChasePlayer();
@@ -59,42 +57,28 @@ public class Enemy2 : MonoBehaviour
         }
     }
 
-    // Função para patrulhar entre os pontos A e B
     private void PatrolBetweenPoints()
     {
-        // Calcular a distância até o alvo
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
-        // Verifica se o inimigo chegou ao alvo
         if (distanceToTarget < 0.1f)
         {
-            // Trocar o alvo quando chegar
             target = target == pointA ? pointB : pointA;
         }
         else
         {
-            // Inimigo está se movendo, definir animação 'run'
-            animator.SetInteger("transition", 1); // Transition para 'run'
-
-            // Mover o inimigo na direção do alvo atual
+            animator.SetInteger("transition", 1);
             MoveTowardsTarget();
-
-            // Atualizar o flip dependendo da direção do movimento
             UpdateFlip();
         }
     }
 
-    // Função para mover o inimigo em direção ao jogador
     private void ChasePlayer()
     {
-        // Definir a animação de movimento 'run'
-        animator.SetInteger("transition", 1); // Transition para 'run'
-
-        // Mover em direção ao jogador
+        animator.SetInteger("transition", 1);
         Vector3 directionToPlayer = player.position - transform.position;
         transform.position = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
 
-        // Atualizar o flip dependendo da direção
         if (directionToPlayer.x < 0 && !isFlipped)
         {
             Flip();
@@ -114,12 +98,10 @@ public class Enemy2 : MonoBehaviour
     {
         if (target == pointA && !isFlipped)
         {
-            // Flip ativado quando indo para o ponto A
             Flip();
         }
         else if (target == pointB && isFlipped)
         {
-            // Flip desativado quando indo para o ponto B
             Flip();
         }
     }
@@ -128,55 +110,50 @@ public class Enemy2 : MonoBehaviour
     {
         isFlipped = !isFlipped;
         Vector3 localScale = transform.localScale;
-        localScale.x *= -1; // Inverter o eixo X para flipar o sprite
+        localScale.x *= -1;
         transform.localScale = localScale;
     }
 
     private bool PlayerInRange()
     {
-        // Verifica se o jogador está dentro da área entre os pontos A e B
         return player.position.x > pointA.position.x && player.position.x < pointB.position.x
             && Vector2.Distance(transform.position, player.position) <= detectionRange;
     }
 
     public void ReceberDano(int dano)
     {
-        // Verifica se o inimigo pode receber dano
         if (podeReceberDano)
         {
-            vida -= dano; // Reduz a vida do inimigo
+            vida -= dano;
             Debug.Log($"Inimigo recebeu {dano} de dano. Vida restante: {vida}");
 
-            // Se a vida chega a zero, morrer
             if (vida <= 0)
             {
-                vida = 0; // Garantir que a vida não fique negativa
-                Die(); // Executa a lógica de morte
+                vida = 0;
+                Die();
             }
             else
             {
-                animator.SetTrigger("hit"); // Trigger a animação de hit
+                animator.SetTrigger("hit");
             }
         }
     }
 
     private void Die()
     {
-        animator.SetTrigger("EnemyDead"); // Trigger a animação de morte
-        // Desativar o inimigo ou executar outras lógicas de morte
+        animator.SetTrigger("EnemyDead");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Aplica dano baseado na tag do objeto colidido
         if (collision.gameObject.CompareTag("Bala"))
         {
-            ReceberDano(danoNormal);  // Aplica o dano normal
+            ReceberDano(danoNormal);
             Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("SpecialAmmo"))
         {
-            ReceberDano(danoEspecial);  // Aplica o dano especial (dano extra)
+            ReceberDano(danoEspecial);
             Destroy(collision.gameObject);
         }
     }
@@ -185,33 +162,51 @@ public class Enemy2 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            // Executar a animação de ataque
-            animator.SetTrigger("attack"); // Transition para 'attack'
-            speed = 0; // Zerar a velocidade do inimigo ao atacar
-
-            // Causa dano ao jogador e aplica knockback
-            Player player = other.GetComponent<Player>();
-            if (player != null)
+            if (attackCoroutine == null) // Iniciar a coroutine de ataque se já não estiver em execução
             {
-                Vector2 knockbackDirection = (other.transform.position - transform.position).normalized; // Direção do knockback
-                player.TakeDamage(danoPlayer, knockbackDirection); // Aplica o dano e a direção de knockback
+                attackCoroutine = StartCoroutine(AttackCoroutine(other.GetComponent<Player>()));
             }
-
-            // Reiniciar a velocidade após 0.4 segundos
-            StartCoroutine(RestoreSpeedAfterDelay(0.2f)); // Ajuste o tempo conforme necessário
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            if (attackCoroutine != null) // Parar a coroutine de ataque quando o jogador sair da colisão
+            {
+                StopCoroutine(attackCoroutine);
+                attackCoroutine = null;
+            }
+        }
+    }
+
+    private IEnumerator AttackCoroutine(Player player)
+    {
+        while (true)
+        {
+            animator.SetTrigger("attack");
+            speed = 0;
+
+            if (player != null)
+            {
+                Vector2 knockbackDirection = (player.transform.position - transform.position).normalized;
+                player.TakeDamage(danoPlayer, knockbackDirection);
+            }
+
+            yield return new WaitForSeconds(attackCooldown); // Espera o tempo de cooldown entre ataques
+        }
+    }
 
     private IEnumerator RestoreSpeedAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        speed = 2f; // Restaura a velocidade original do inimigo
+        speed = 2f;
     }
 
     private void DestruirInimigo()
     {
         Debug.Log("Inimigo destruído!");
-        Destroy(gameObject, 2f); // Destrói o objeto do inimigo
+        Destroy(gameObject, 2f);
     }
 }

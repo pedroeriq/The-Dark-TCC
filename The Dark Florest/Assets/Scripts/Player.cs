@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -356,10 +357,16 @@ public class Player : MonoBehaviour
     {
         Anim.SetTrigger("Dead");
         move = false;
+        Invoke("LoadGameOver",1.5f);
         yield return new WaitForSeconds(2.0f);
         move = true;
 
         Respawn();
+    }
+
+    private void LoadGameOver()
+    {
+        SceneManager.LoadScene("GameOver");
     }
 
     private void Respawn()
