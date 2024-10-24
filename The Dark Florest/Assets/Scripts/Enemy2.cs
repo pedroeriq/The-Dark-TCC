@@ -6,7 +6,8 @@ public class Enemy2 : MonoBehaviour
 {
     public Transform pointA; // Ponto A
     public Transform pointB; // Ponto B
-    public float speed = 2f; // Velocidade do inimigo
+    public float speed = 2f; // Velocidade do inimigo em patrulha
+    public float chaseSpeed = 4f; // Velocidade do inimigo ao perseguir o jogador
     public float detectionRange = 5f; // Distância de detecção do jogador
     public Transform player; // Referência ao jogador
     private Animator animator; // Referência ao Animator
@@ -16,7 +17,7 @@ public class Enemy2 : MonoBehaviour
     public int danoNormal = 1; // Dano causado por bala normal
     public int danoEspecial = 2; // Dano causado por bala especial
     public int danoPlayer = 10;
-    
+
     private Transform target; // Alvo atual (usado para patrulha)
     private bool podeReceberDano = true; // Flag para verificar se o inimigo pode receber dano
     private bool isChasingPlayer = false; // Flag para verificar se o inimigo está perseguindo o jogador
@@ -38,13 +39,10 @@ public class Enemy2 : MonoBehaviour
             return;
         }
 
+        // Ativa perseguição ao jogador para sempre ao entrar no campo de visão
         if (PlayerInRange())
         {
             isChasingPlayer = true;
-        }
-        else
-        {
-            isChasingPlayer = false;
         }
 
         if (isChasingPlayer)
@@ -75,9 +73,12 @@ public class Enemy2 : MonoBehaviour
 
     private void ChasePlayer()
     {
+        // Aumenta a velocidade para perseguição
         animator.SetInteger("transition", 1);
         Vector3 directionToPlayer = player.position - transform.position;
-        transform.position = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
+
+        // Usar a velocidade de perseguição
+        transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
 
         if (directionToPlayer.x < 0 && !isFlipped)
         {
@@ -91,6 +92,7 @@ public class Enemy2 : MonoBehaviour
 
     private void MoveTowardsTarget()
     {
+        // Usar a velocidade de patrulha
         transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
     }
 
@@ -116,8 +118,8 @@ public class Enemy2 : MonoBehaviour
 
     private bool PlayerInRange()
     {
-        return player.position.x > pointA.position.x && player.position.x < pointB.position.x
-            && Vector2.Distance(transform.position, player.position) <= detectionRange;
+        // Verifica se o jogador está no campo de visão e dentro do alcance de detecção
+        return Vector2.Distance(transform.position, player.position) <= detectionRange;
     }
 
     public void ReceberDano(int dano)
@@ -185,23 +187,22 @@ public class Enemy2 : MonoBehaviour
     {
         while (true)
         {
+            // Toca a animação de ataque
             animator.SetTrigger("attack");
-            speed = 0;
 
+            // Aplica o dano ao jogador, se ele ainda estiver lá
             if (player != null)
             {
                 Vector2 knockbackDirection = (player.transform.position - transform.position).normalized;
                 player.TakeDamage(danoPlayer, knockbackDirection);
             }
 
-            yield return new WaitForSeconds(attackCooldown); // Espera o tempo de cooldown entre ataques
-        }
-    }
+            // Aguarda o tempo da animação de ataque para continuar
+            yield return new WaitForSeconds(attackCooldown);
 
-    private IEnumerator RestoreSpeedAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        speed = 2f;
+            // Após o cooldown, restaura a velocidade original do inimigo
+            speed = 2f; // Garantir que a velocidade seja restaurada
+        }
     }
 
     private void DestruirInimigo()
