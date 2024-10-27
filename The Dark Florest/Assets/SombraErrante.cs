@@ -12,17 +12,22 @@ public class SombraErrante : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private bool sombraRevelada = false;  // Flag para verificar se a sombra já foi revelada
     private bool podeReceberDano = false;  // Flag para verificar se a sombra pode receber dano
+    private bool podeSeguir = false; // Controle para iniciar o movimento após surgir
     public int vida = 5;  // Vida inicial da Sombra Errante
     public int danoNormal = 1;  // Dano causado por bala normal
     public int danoEspecial = 2;  // Dano causado por bala especial
+    public float tempoDePausa = 0.3f;  // Tempo de pausa após levar dano
 
     private Animator animator;  // Referência ao Animator
+    private bool estaEmHit = false; // Flag para verificar se o inimigo está na animação de hit
+    private float velocidadeOriginal; // Armazena a velocidade original
 
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();  // Inicializa o Animator
         spriteRenderer.enabled = false;  // Sombra começa invisível
+        velocidadeOriginal = speed;  // Armazena a velocidade original
     }
 
     void Update()
@@ -34,7 +39,8 @@ public class SombraErrante : MonoBehaviour
             RevelarSombra();
         }
 
-        if (sombraRevelada)
+        // Só segue o player se a animação de hit não estiver ativa
+        if (podeSeguir && !estaEmHit)
         {
             Seguir();
         }
@@ -60,8 +66,11 @@ public class SombraErrante : MonoBehaviour
 
     private IEnumerator EsperarAnimacaoSurgimento()
     {
+        // Aguarda o tempo da animação de surgimento
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        Seguir();  // Inicia o movimento após a animação
+        
+        // Permite que o inimigo comece a seguir o player
+        podeSeguir = true;
     }
 
     private void Seguir()
@@ -97,7 +106,28 @@ public class SombraErrante : MonoBehaviour
         {
             vida -= dano;
             Debug.Log($"Sombra recebeu {dano} de dano. Vida restante: {vida}");
+
+            // Chama a animação de hit
+            animator.SetTrigger("Hit");
+
+            // Interrompe a movimentação e zera a velocidade temporariamente
+            StartCoroutine(PausaMovimentoTemporaria());
         }
+    }
+
+    private IEnumerator PausaMovimentoTemporaria()
+    {
+        estaEmHit = true;
+
+        // Zera a velocidade enquanto estiver em hit
+        speed = 0;
+
+        // Espera o tempo configurável antes de retornar a velocidade original
+        yield return new WaitForSeconds(tempoDePausa);
+
+        // Restaura a velocidade original e permite seguir novamente
+        speed = velocidadeOriginal;
+        estaEmHit = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
