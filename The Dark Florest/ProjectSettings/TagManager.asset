@@ -16,6 +16,7 @@ TagManager:
   - Enemy2
   - Cura
   - CuraMAX
+  - Carta
   layers:
   - Default
   - TransparentFX

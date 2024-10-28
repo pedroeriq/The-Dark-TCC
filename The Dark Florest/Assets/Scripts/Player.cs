@@ -302,6 +302,10 @@ public class Player : MonoBehaviour
             specialAmmoCount = specialAmmoLimit;
             Destroy(collider.gameObject);
         }
+        else if (collider.CompareTag("Carta")) // Adicionando lógica para destruir a Carta
+        {
+            Destroy(collider.gameObject); // Destrói a Carta
+        }
     }
 
     public void TakeDamage(int damage, Vector2? knockbackDirection = null)

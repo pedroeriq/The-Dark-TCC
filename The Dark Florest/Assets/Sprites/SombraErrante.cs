@@ -16,11 +16,16 @@ public class SombraErrante : MonoBehaviour
     public int vida = 5;  // Vida inicial da Sombra Errante
     public int danoNormal = 1;  // Dano causado por bala normal
     public int danoEspecial = 2;  // Dano causado por bala especial
+    public int danoPlayer = 10; // Dano causado ao jogador
     public float tempoDePausa = 0.3f;  // Tempo de pausa após levar dano
+    public float attackCooldown = 1f; // Tempo de recarga entre ataques
 
     private Animator animator;  // Referência ao Animator
     private bool estaEmHit = false; // Flag para verificar se o inimigo está na animação de hit
+    private bool estaAtacando = false; // Flag para controlar o cooldown de ataque
     private float velocidadeOriginal; // Armazena a velocidade original
+
+    public Transform pontoAtaque;  // Referência ao GameObject do ponto de ataque
 
     void Start()
     {
@@ -45,6 +50,9 @@ public class SombraErrante : MonoBehaviour
             Seguir();
         }
 
+        // Atualiza a rotação do ponto de ataque para ficar de frente para o jogador
+        AtualizarPontoAtaque();
+
         if (vida <= 0)
         {
             DestruirSombra();
@@ -66,10 +74,7 @@ public class SombraErrante : MonoBehaviour
 
     private IEnumerator EsperarAnimacaoSurgimento()
     {
-        // Aguarda o tempo da animação de surgimento
         yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
-        
-        // Permite que o inimigo comece a seguir o player
         podeSeguir = true;
     }
 
@@ -79,17 +84,14 @@ public class SombraErrante : MonoBehaviour
 
         if (direcao.magnitude > 0.1f)
         {
-            // Chama a animação de corrida (transition 1) se estiver se movendo
             animator.SetInteger("transition", 1);
             transform.position = Vector2.MoveTowards(transform.position, playerPos.position, speed * Time.deltaTime);
         }
         else
         {
-            // Chama a animação de idle (transition 0) se estiver parado
             animator.SetInteger("transition", 0);
         }
 
-        // Altera o flip do sprite com base na direção do movimento
         if (direcao.x > 0)
         {
             spriteRenderer.flipX = false;
@@ -100,6 +102,21 @@ public class SombraErrante : MonoBehaviour
         }
     }
 
+    private void AtualizarPontoAtaque()
+    {
+        if (pontoAtaque != null)
+        {
+            // Faz o ponto de ataque rotacionar para ficar de frente para o jogador
+            Vector2 direcaoParaPlayer = (playerPos.position - transform.position).normalized;
+        
+            // Calcula o ângulo em graus
+            float angulo = Mathf.Atan2(direcaoParaPlayer.y, direcaoParaPlayer.x) * Mathf.Rad2Deg;
+
+            // Ajusta a rotação para garantir que o ponto aponte corretamente
+            pontoAtaque.rotation = Quaternion.Euler(new Vector3(0, 0, angulo - 90)); // Subtrai 90 graus se necessário
+        }
+    }
+
     public void ReceberDano(int dano)
     {
         if (podeReceberDano)
@@ -107,10 +124,8 @@ public class SombraErrante : MonoBehaviour
             vida -= dano;
             Debug.Log($"Sombra recebeu {dano} de dano. Vida restante: {vida}");
 
-            // Chama a animação de hit
             animator.SetTrigger("Hit");
 
-            // Interrompe a movimentação e zera a velocidade temporariamente
             StartCoroutine(PausaMovimentoTemporaria());
         }
     }
@@ -118,14 +133,8 @@ public class SombraErrante : MonoBehaviour
     private IEnumerator PausaMovimentoTemporaria()
     {
         estaEmHit = true;
-
-        // Zera a velocidade enquanto estiver em hit
         speed = 0;
-
-        // Espera o tempo configurável antes de retornar a velocidade original
         yield return new WaitForSeconds(tempoDePausa);
-
-        // Restaura a velocidade original e permite seguir novamente
         speed = velocidadeOriginal;
         estaEmHit = false;
     }
@@ -142,9 +151,39 @@ public class SombraErrante : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player") && !estaAtacando)
+        {
+            StartCoroutine(AttackCoroutine(other.GetComponent<Player>()));
+        }
+    }
+
+    private IEnumerator AttackCoroutine(Player player)
+    {
+        estaAtacando = true;
+        animator.SetTrigger("Attack");
+
+        if (player != null)
+        {
+            Vector2 knockbackDirection = (player.transform.position - transform.position).normalized;
+            player.TakeDamage(danoPlayer, knockbackDirection);
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+        estaAtacando = false;
+    }
+
     private void DestruirSombra()
     {
         Debug.Log("Sombra destruída!");
+        animator.SetInteger("transition", 5);
+        StartCoroutine(DestruirAposMorte());
+    }
+
+    private IEnumerator DestruirAposMorte()
+    {
+        yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
         Destroy(gameObject);
     }
 }
