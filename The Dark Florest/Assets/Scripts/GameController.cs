@@ -33,7 +33,7 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && !isPaused) // Verifica se a tecla espaço foi pressionada e se o jogo não está pausado
+        if (Input.GetKeyDown(KeyCode.Escape) && !isPaused) // Verifica se a tecla espaço foi pressionada e se o jogo não está pausado
         {
             PauseGame(); // Mostra o menu de pause
         }
