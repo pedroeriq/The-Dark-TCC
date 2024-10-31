@@ -1,18 +1,19 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PauseMenu : MonoBehaviour
 {
     public GameObject pauseMenuUI; // Arraste o prefab do painel de pause aqui no Inspector
+    public CartaUI cartaUI; // Referência ao componente CartaUI
+    public GameObject[] cartaSprites; // Array de sprites das cartas
 
     void Start()
     {
-        // Garante que o menu de pause comece desativado
-        pauseMenuUI.SetActive(false);
-    }
-
-    public void Resume()
-    {
-        GameController.instance.ResumeGame(); // Chama a função ResumeGame do GameController
+        // Desativa todas as cartas no início
+        foreach (var carta in cartaSprites)
+        {
+            carta.SetActive(false);
+        }
     }
 
     public void ShowPauseMenu()
@@ -21,9 +22,33 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 0f; // Para o tempo
     }
 
+    public void HidePauseMenu()
+    {
+        pauseMenuUI.SetActive(false); // Desativa o painel de pause
+    }
+
+    public void ShowCarta(int cartaIndex)
+    {
+        cartaUI.ShowCarta(cartaIndex); // Exibe o painel específico da carta
+        HidePauseMenu(); // Oculta o menu de pausa
+    }
+
+    public void Resume()
+    {
+        GameController.instance.ResumeGame(); // Chama a função ResumeGame do GameController
+    }
+
     public void ExitGame()
     {
-        Application.Quit(); // Sai do jogo
+        Application.Quit();
         Debug.Log("Saindo do jogo...");
+    }
+
+    public void EnableCartaSprite(int cartaIndex)
+    {
+        if (cartaIndex >= 0 && cartaIndex < cartaSprites.Length)
+        {
+            cartaSprites[cartaIndex].SetActive(true); // Ativa a sprite da carta específica
+        }
     }
 }
