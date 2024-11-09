@@ -133,7 +133,7 @@ public class FlashlightController : MonoBehaviour
         if (currentFlashlight != null)
         {
             currentFlashlight.transform.position = playerTransform.position + offset;
-            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 320f); // Mantém a lanterna apontando para baixo enquanto segue a rotação do jogador
+            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 338f); // Mantém a lanterna apontando para baixo enquanto segue a rotação do jogador
         }
     }
 
