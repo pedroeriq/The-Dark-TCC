@@ -24,11 +24,14 @@ public class Enemy2 : MonoBehaviour
 
     private Coroutine attackCoroutine; // Referência à coroutine de ataque
     public float attackCooldown = 1f; // Tempo de recarga entre ataques
+    
+    
 
     void Start()
     {
         target = pointA;
         animator = GetComponent<Animator>();
+        
     }
 
     void Update()
@@ -79,6 +82,7 @@ public class Enemy2 : MonoBehaviour
 
         // Usar a velocidade de perseguição
         transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
+        
 
         if (directionToPlayer.x < 0 && !isFlipped)
         {
@@ -144,6 +148,9 @@ public class Enemy2 : MonoBehaviour
     private void Die()
     {
         animator.SetTrigger("EnemyDead");
+        TocarMusica T = null;
+        T.GetComponent<TocarMusica>().Estartocando = false;
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

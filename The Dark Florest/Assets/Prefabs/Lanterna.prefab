@@ -84,7 +84,7 @@ SpriteRenderer:
   m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &1608564115888001508
@@ -102,9 +102,9 @@ MonoBehaviour:
   m_ComponentVersion: 1
   m_LightType: 1
   m_BlendStyleIndex: 0
-  m_FalloffIntensity: 0.687
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2.97
+  m_FalloffIntensity: 0.622
+  m_Color: {r: 1, g: 0.8099809, b: 0.073584795, a: 1}
+  m_Intensity: 1.23
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -121,8 +121,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 15.0649, y: 0.41830015, z: 0}
-    m_Extent: {x: 16.367, y: 8.8976, z: 0}
+    m_Center: {x: 15.0644, y: 0.41775036, z: 0}
+    m_Extent: {x: 16.1978, y: 8.72725, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -130,7 +130,7 @@ MonoBehaviour:
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
   m_ShapeLightParametricRadius: 1
-  m_ShapeLightFalloffSize: 1.72
+  m_ShapeLightFalloffSize: 1.55
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
   - {x: 28.78855, y: 0.8419807, z: 0}
