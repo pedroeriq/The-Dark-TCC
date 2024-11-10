@@ -4879,8 +4879,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flashlightPrefab: {fileID: 8512930244552213279, guid: 97bca7a9a770ce24084963dbe9d97d49, type: 3}
-  flashlightDuration: 10
-  offset: {x: 0.05, y: 3.12, z: 0}
+  flashlightDuration: 30
+  offset: {x: 0, y: 3, z: 0}
+  runOffset: {x: 0.5, y: 2.9, z: 0}
+  runOffsetLeft: {x: -0.5, y: 2.9, z: 0}
   timerText: {fileID: 1541255051}
   maxUses: 3
 --- !u!4 &691384289
@@ -5898,7 +5900,7 @@ Transform:
   m_GameObject: {fileID: 825452491}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 431.02, y: -1.44, z: 0}
+  m_LocalPosition: {x: 304.51, y: 10.69, z: 0}
   m_LocalScale: {x: 7.134263, y: 7.134263, z: 7.134263}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -50431,7 +50433,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 107.9, y: -155.4}
+  m_AnchoredPosition: {x: 107.8999, y: -155.40002}
   m_SizeDelta: {x: 69.0391, y: 69.0391}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2091316422
@@ -51295,7 +51297,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
       propertyPath: maxHealth
-      value: 6
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
       propertyPath: audioCorrendo
@@ -51325,6 +51327,26 @@ PrefabInstance:
       propertyPath: enemyLayers.m_Bits
       value: 256
       objectReference: {fileID: 0}
+    - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
+      propertyPath: coracoes.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
+      propertyPath: specialBulletPrefab
+      value: 
+      objectReference: {fileID: 8026317944678733925, guid: 81e8e9682fa1b164db4dc780d19a528c, type: 3}
+    - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
+      propertyPath: coracoes.Array.data[0]
+      value: 
+      objectReference: {fileID: 1766825987}
+    - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
+      propertyPath: coracoes.Array.data[1]
+      value: 
+      objectReference: {fileID: 773508822}
+    - target: {fileID: 7610228921011217427, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
+      propertyPath: coracoes.Array.data[2]
+      value: 
+      objectReference: {fileID: 1095839896}
     - target: {fileID: 8155982951774992977, guid: a08b645331f8d5148ac81ba5308e6238, type: 3}
       propertyPath: m_GravityScale
       value: 11

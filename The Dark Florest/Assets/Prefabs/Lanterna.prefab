@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0.77901286, y: 0.3117253, z: -0.322345, w: 0.43824658}
   m_LocalPosition: {x: -3.67, y: 3.67, z: 0}
-  m_LocalScale: {x: 0.1977681, y: 0.12519282, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -121,8 +121,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 15.0644, y: 0.41775036, z: 0}
-    m_Extent: {x: 16.1978, y: 8.72725, z: 0}
+    m_Center: {x: 25.08095, y: -2.17315, z: 0}
+    m_Extent: {x: 26.21375, y: 7.90425, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -133,11 +133,11 @@ MonoBehaviour:
   m_ShapeLightFalloffSize: 1.55
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: 28.78855, y: 0.8419807, z: 0}
-  - {x: 29.712578, y: 7.5953245, z: 0}
+  - {x: 38.039986, y: -2.7130969, z: -0.00009258077}
+  - {x: 49.745564, y: 4.182207, z: -0.000063815816}
   - {x: 0.41722307, y: -0.1395046, z: 0}
   - {x: 0.77123535, y: -0.38857898, z: 0}
-  - {x: 28.618408, y: -6.7602487, z: 0}
+  - {x: 26.650314, y: -8.528842, z: -0.00014853713}
 --- !u!61 &7174309770689889302
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -1,16 +1,19 @@
 using UnityEngine;
-using TMPro; // Certifique-se de adicionar essa linha se estiver usando TextMesh Pro
+using TMPro;
 
 public class FlashlightController : MonoBehaviour
 {
     public GameObject flashlightPrefab; // Prefab da lanterna
     public float flashlightDuration = 30f; // Duração total da lanterna
-    public Vector3 offset = new Vector3(0, 2.6f, 0); // Offset da posição relativa ao Player
+    public Vector3 offset = new Vector3(0, 2.6f, 0); // Offset padrão da posição relativa ao Player
+    public Vector3 runOffset; // Offset ao correr para a direita
+    public Vector3 runOffsetLeft; // Offset ao correr para a esquerda
     public TMP_Text timerText; // Texto para exibir o tempo restante da lanterna
     public int maxUses = 3; // Número máximo de vezes que a lanterna pode ser usada
 
     private GameObject currentFlashlight; // Referência à lanterna instanciada
     private Transform playerTransform; // Referência ao Transform do Player
+    private Animator playerAnimator; // Referência ao Animator do jogador
     private float remainingDuration; // Duração restante da lanterna
     private bool isFlashlightActive; // Estado da lanterna
     private int remainingUses; // Contador de usos restantes
@@ -23,6 +26,7 @@ public class FlashlightController : MonoBehaviour
         if (player != null)
         {
             playerTransform = player.transform;
+            playerAnimator = player.GetComponent<Animator>(); // Obtém o Animator do jogador
         }
         else
         {
@@ -129,11 +133,30 @@ public class FlashlightController : MonoBehaviour
 
     void FollowPlayer()
     {
-        // Atualiza a posição e rotação da lanterna para acompanhar o Player com um offset
         if (currentFlashlight != null)
         {
-            currentFlashlight.transform.position = playerTransform.position + offset;
-            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 338f); // Mantém a lanterna apontando para baixo enquanto segue a rotação do jogador
+            Vector3 currentOffset;
+
+            // Verifica se a animação atual é "Player Run" para ajustar o offset
+            if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("Player Run"))
+            {
+                // Se a velocidade horizontal do jogador for maior que 0, significa que ele está indo para a direita
+                if (playerTransform.GetComponent<Rigidbody2D>().velocity.x < 0) // Correndo para a esquerda
+                {
+                    currentOffset = runOffsetLeft;
+                }
+                else // Correndo para a direita
+                {
+                    currentOffset = runOffset;
+                }
+            }
+            else
+            {
+                currentOffset = offset; // Offset padrão quando não está correndo
+            }
+
+            currentFlashlight.transform.position = playerTransform.position + currentOffset;
+            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 338f);
         }
     }
 

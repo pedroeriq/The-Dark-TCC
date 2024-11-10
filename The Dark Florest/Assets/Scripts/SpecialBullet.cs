@@ -10,10 +10,10 @@ public class SpecialBullet : Bullet
         Destroy(gameObject, specialLifetime);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         // Verifica se a colisão é com um objeto com a tag "Enemy"
-        if (collision.gameObject.CompareTag("Enemy"))
+        if (collider.gameObject.CompareTag("Enemy"))
         {
             Destroy(gameObject); // Destrói a bala especial ao colidir com o inimigo
         }

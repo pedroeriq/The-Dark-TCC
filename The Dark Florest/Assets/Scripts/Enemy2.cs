@@ -25,20 +25,24 @@ public class Enemy2 : MonoBehaviour
     private Coroutine attackCoroutine; // Referência à coroutine de ataque
     public float attackCooldown = 1f; // Tempo de recarga entre ataques
     
-    
+    private Rigidbody2D rb2d; // Referência ao Rigidbody2D
+
+    private bool isDead = false; // Flag para verificar se o inimigo está morto
 
     void Start()
     {
         target = pointA;
         animator = GetComponent<Animator>();
-        
+        rb2d = GetComponent<Rigidbody2D>(); // Obtenha a referência ao Rigidbody2D
     }
 
     void Update()
     {
+        if (isDead) return; // Se o inimigo estiver morto, não faz mais nada
+
         if (vida <= 0)
         {
-            DestruirInimigo();
+            Die();
             return;
         }
 
@@ -60,6 +64,8 @@ public class Enemy2 : MonoBehaviour
 
     private void PatrolBetweenPoints()
     {
+        if (isDead) return; // Se o inimigo estiver morto, não faz mais nada
+
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
         if (distanceToTarget < 0.1f)
@@ -76,6 +82,8 @@ public class Enemy2 : MonoBehaviour
 
     private void ChasePlayer()
     {
+        if (isDead) return; // Se o inimigo estiver morto, não faz mais nada
+
         // Aumenta a velocidade para perseguição
         animator.SetInteger("transition", 1);
         Vector3 directionToPlayer = player.position - transform.position;
@@ -83,7 +91,6 @@ public class Enemy2 : MonoBehaviour
         // Usar a velocidade de perseguição
         transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
         
-
         if (directionToPlayer.x < 0 && !isFlipped)
         {
             Flip();
@@ -96,12 +103,16 @@ public class Enemy2 : MonoBehaviour
 
     private void MoveTowardsTarget()
     {
+        if (isDead) return; // Se o inimigo estiver morto, não faz mais nada
+
         // Usar a velocidade de patrulha
         transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
     }
 
     private void UpdateFlip()
     {
+        if (isDead) return; // Se o inimigo estiver morto, não faz mais nada
+
         if (target == pointA && !isFlipped)
         {
             Flip();
@@ -128,7 +139,7 @@ public class Enemy2 : MonoBehaviour
 
     public void ReceberDano(int dano)
     {
-        if (podeReceberDano)
+        if (podeReceberDano && !isDead)
         {
             vida -= dano;
             Debug.Log($"Inimigo recebeu {dano} de dano. Vida restante: {vida}");
@@ -147,10 +158,17 @@ public class Enemy2 : MonoBehaviour
 
     private void Die()
     {
-        animator.SetTrigger("EnemyDead");
-        TocarMusica T = null;
-        T.GetComponent<TocarMusica>().Estartocando = false;
+        if (isDead) return; // Se já estiver morto, não faz nada
 
+        isDead = true; // Marca o inimigo como morto
+        animator.SetTrigger("EnemyDead");
+
+        // Desativa a física para parar o movimento
+        rb2d.velocity = Vector2.zero; // Para qualquer movimento em andamento
+        rb2d.isKinematic = true; // Torna o Rigidbody2D cinemático para parar de ser afetado pela física
+
+        // Destrói o inimigo após a animação de morte (2 segundos de delay para a animação terminar)
+        Destroy(gameObject, 1.5f); // O inimigo será destruído após 2 segundos
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -169,6 +187,8 @@ public class Enemy2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isDead) return; // Se o inimigo já estiver morto, não realiza ataques
+
         if (other.CompareTag("Player"))
         {
             if (attackCoroutine == null) // Iniciar a coroutine de ataque se já não estiver em execução
@@ -210,11 +230,5 @@ public class Enemy2 : MonoBehaviour
             // Após o cooldown, restaura a velocidade original do inimigo
             speed = 2f; // Garantir que a velocidade seja restaurada
         }
-    }
-
-    private void DestruirInimigo()
-    {
-        Debug.Log("Inimigo destruído!");
-        Destroy(gameObject, 2f);
     }
 }
