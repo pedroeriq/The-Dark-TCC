@@ -26,8 +26,15 @@ public class Enemy2 : MonoBehaviour
     public float attackCooldown = 1f; // Tempo de recarga entre ataques
     
     private Rigidbody2D rb2d; // Referência ao Rigidbody2D
+    [SerializeField] private AudioSource Musica;
+    [SerializeField] private AudioSource Grito;
+    public bool tocar = true;
 
     private bool isDead = false; // Flag para verificar se o inimigo está morto
+
+    // Nova variável pública para ajustar a força do knockback
+    public float knockbackForce = 5f; // Força do knockback (ajustável no Inspector)
+    public float knockbackDuration = 0.2f; // Duração do efeito de knockback
 
     void Start()
     {
@@ -88,6 +95,14 @@ public class Enemy2 : MonoBehaviour
         animator.SetInteger("transition", 1);
         Vector3 directionToPlayer = player.position - transform.position;
 
+        // Toca a música de perseguição
+        if (tocar && !Musica.isPlaying) // Verifica se a música não está tocando
+        {
+            Grito.Play();   // Toca o grito
+            Musica.Play();  // Toca a música
+            tocar = false;  // Para não tocar a música repetidamente
+        }
+
         // Usar a velocidade de perseguição
         transform.position = Vector3.MoveTowards(transform.position, player.position, chaseSpeed * Time.deltaTime);
         
@@ -144,6 +159,19 @@ public class Enemy2 : MonoBehaviour
             vida -= dano;
             Debug.Log($"Inimigo recebeu {dano} de dano. Vida restante: {vida}");
 
+            // Aplica knockback se o inimigo não estiver morto
+            if (vida > 0)
+            {
+                // Calcula a direção do knockback baseada na posição do jogador
+                Vector2 knockbackDirection = (transform.position - player.position).normalized;
+
+                // Aplica a força de knockback (ajuste a força para um valor adequado)
+                rb2d.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse); // Adiciona a força de impulso
+
+                // Pausa o movimento do inimigo por um breve momento
+                StartCoroutine(HandleKnockback());
+            }
+
             if (vida <= 0)
             {
                 vida = 0;
@@ -156,9 +184,25 @@ public class Enemy2 : MonoBehaviour
         }
     }
 
+    private IEnumerator HandleKnockback()
+    {
+        // Pausa o movimento do inimigo por um tempo curto (durante o knockback)
+        float originalSpeed = speed;
+        speed = 0f; // Para o inimigo de se mover enquanto aplica o knockback
+
+        // Duração do efeito de knockback
+        yield return new WaitForSeconds(knockbackDuration);
+
+        // Retorna à velocidade de perseguição original
+        speed = originalSpeed;
+    }
+
     private void Die()
     {
         if (isDead) return; // Se já estiver morto, não faz nada
+        
+        Musica.Stop();
+        Grito.Stop();
 
         isDead = true; // Marca o inimigo como morto
         animator.SetTrigger("EnemyDead");
