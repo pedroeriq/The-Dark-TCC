@@ -7,9 +7,6 @@ public class GameController : MonoBehaviour
     public static GameController instance; // Singleton instance
     public TMP_Text moedaTXT; // Texto para mostrar as moedas na tela
     public GameObject playerPrefab; // Prefab do jogador para respawn
-    public HeartUI heartUI; // Referência para o HeartUI, que controla os corações na UI
-
-    public int playerLife = 6; // Vida do jogador (3 corações: 6 pontos de vida total)
     public int moedas; // Contador de moedas
 
     private bool isPlayerDead = false; // Estado do jogador
@@ -32,24 +29,13 @@ public class GameController : MonoBehaviour
     {
         moedas = 0;
         UpdateMoedaTXT(); // Atualiza o texto de moedas na inicialização
-        heartUI.UpdateHearts(playerLife); // Atualiza o visual dos corações na inicialização
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H)) // Pressione "H" para simular dano
-        {
-            TakeDamage(1);
-        }
-
         if (Input.GetKeyDown(KeyCode.Escape) && !isPaused) // Verifica se a tecla espaço foi pressionada e se o jogo não está pausado
         {
             PauseGame(); // Mostra o menu de pause
-        }
-
-        if (playerLife <= 0 && !isPlayerDead)
-        {
-            Die();
         }
     }
 
@@ -79,36 +65,6 @@ public class GameController : MonoBehaviour
         {
             moedaTXT.text = "" + moedas.ToString();
         }
-    }
-
-    // Função para reduzir a vida do jogador
-    public void TakeDamage(int damage)
-    {
-        playerLife -= damage;
-        if (playerLife < 0) playerLife = 0;
-    
-        heartUI.UpdateHearts(playerLife); // Atualiza os corações imediatamente após dano
-
-        if (playerLife <= 0)
-        {
-            Die();
-        }
-    }
-
-    private void Die()
-    {
-        if (isPlayerDead) return;
-        isPlayerDead = true;
-
-        // Movendo o jogador para o último checkpoint salvo
-        Transform playerTransform = GameObject.FindWithTag("Player").transform;
-        playerTransform.position = CheckpointManager.Instance.GetLastCheckpointPosition();
-
-        // Restaurar a vida do jogador
-        playerLife = 6;
-        heartUI.UpdateHearts(playerLife); // Atualiza o visual dos corações para vida cheia
-
-        isPlayerDead = false;
     }
 
     public void RespawnPlayer()

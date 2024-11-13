@@ -7,12 +7,14 @@ using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
+    
+    public TextMeshProUGUI specialAmmoText; // Adiciona a referência ao TextMeshPro para mostrar a munição especial
     public AudioSource audioTiro;
-    public AudioSource audioPulo;  // Para o som de pulo
-    public AudioSource audioCorrendo;  // Para o som de corrida
-    private bool isHit = false; // Para controlar se o player está recebendo dano
-    public float knockbackForce = 5f; // Força do knockback
-    public float knockbackDuration = 0.5f; // Duração do knockback
+    public AudioSource audioPulo;
+    public AudioSource audioCorrendo;
+    private bool isHit = false;
+    public float knockbackForce = 5f;
+    public float knockbackDuration = 0.5f;
     public Transform SpecialFirePoint;
     public Transform FirePoint;
     public bool isJumping;
@@ -24,24 +26,26 @@ public class Player : MonoBehaviour
     public GameObject bulletPrefab;
     public GameObject specialBulletPrefab;
     public int specialAmmoLimit = 5;
-    public int maxHealth = 100;
     public int enemyDamage = 10;
-    public float attackCooldown = 1f; // Tempo de espera entre os ataques
-    public float meleeAttackRange = 1f; // Alcance do ataque corpo a corpo
-    public LayerMask enemyLayers; // Camada dos inimigos
+    public float attackCooldown = 1f;
+    public float meleeAttackRange = 1f;
+    public LayerMask enemyLayers;
 
-    public Image healthBarFill;
-
+    public Image[] heartImages; // Array para armazenar as imagens dos corações
+    public Sprite fullHeart, halfHeart, emptyHeart; // Sprites para cada estado do coração
+    
     private Rigidbody2D rig;
     private bool isGrounded;
     private bool hasSpecialAmmo;
     private int specialAmmoCount;
-    private float currentHealth;
+    public int currentHealth; // 6 pontos de vida (2 pontos para cada coração)
+    public int maxHealth = 6;
     public Animator Anim;
     private float movement;
     private bool move = true;
     private bool isAttacking = false;
-    private bool canAttack = true; // Controle de cooldown
+    private bool canAttack = true;
+    private bool isDead = false; // Variável para controlar se o Player já morreu
 
     void Start()
     {
@@ -50,18 +54,20 @@ public class Player : MonoBehaviour
         specialAmmoCount = 0;
         currentHealth = maxHealth;
         Anim = GetComponent<Animator>();
-        UpdateHealthBar();
+        UpdateHearts();
         CheckpointManager.Instance.lastCheckpointPosition = transform.position;
+        UpdateSpecialAmmoText(); 
     }
+
 
     void Update()
     {
-        if (move && !isAttacking) // Bloqueia movimento enquanto ataca
+        if (move && !isAttacking)
         {
             Move();
             Jump();
-            Attack(); // Ataque à distância
-            MeleeAttack(); // Ataque corpo a corpo
+            Attack();
+            MeleeAttack();
             CheckGround();
 
             if (!isGrounded)
@@ -78,6 +84,7 @@ public class Player : MonoBehaviour
             }
         }
     }
+
 
     void Move()
     {
@@ -133,17 +140,9 @@ public class Player : MonoBehaviour
 
     void Attack()
     {
-        if (canAttack && Input.GetKeyDown(KeyCode.Z)) // Ataque com a tecla Z
+        if (canAttack)
         {
-            if (hasSpecialAmmo && specialAmmoCount > 0)
-            {
-                StartCoroutine(PerformSpecialAttack()); // Ataque especial
-                if (audioTiro != null)
-                {
-                    audioTiro.Play();
-                }
-            }
-            else
+            if (Input.GetKeyDown(KeyCode.Z)) // Ataque normal com a tecla Z
             {
                 StartCoroutine(PerformNormalAttack()); // Ataque normal
 
@@ -153,8 +152,21 @@ public class Player : MonoBehaviour
                     audioTiro.Play();
                 }
             }
+
+            if (Input.GetKeyDown(KeyCode.V)) // Ataque especial com a tecla V
+            {
+                if (hasSpecialAmmo && specialAmmoCount > 0)
+                {
+                    StartCoroutine(PerformSpecialAttack()); // Ataque especial
+                    if (audioTiro != null)
+                    {
+                        audioTiro.Play();
+                    }
+                }
+            }
         }
     }
+
 
 
     // Novo método para o ataque corpo a corpo
@@ -244,7 +256,13 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.2f); // Delay para sincronizar com a animação
 
         SpecialFireBullet(specialBulletPrefab); // Dispara o ataque especial
-        specialAmmoCount--; // Reduz a contagem de munição especial
+
+        // Diminui a munição apenas se houver munição
+        if (specialAmmoCount > 0)
+        {
+            specialAmmoCount--; // Reduz a contagem de munição especial
+            UpdateSpecialAmmoText(); // Atualiza o texto na tela
+        }
 
         if (specialAmmoCount <= 0)
         {
@@ -258,6 +276,10 @@ public class Player : MonoBehaviour
 
         yield return new WaitForSeconds(attackCooldown);
         canAttack = true; // Libera novos ataques
+    }
+    void UpdateSpecialAmmoText()
+    {
+        specialAmmoText.text = "" + specialAmmoCount.ToString();
     }
 
     void FireBullet(GameObject bullet)
@@ -299,8 +321,9 @@ public class Player : MonoBehaviour
         if (collider.CompareTag("SpecialAmmo"))
         {
             hasSpecialAmmo = true;
-            specialAmmoCount = specialAmmoLimit;
-            Destroy(collider.gameObject);
+            specialAmmoCount = specialAmmoLimit; // Define a quantidade máxima de munição especial
+            UpdateSpecialAmmoText(); // Atualiza o texto na tela
+            Destroy(collider.gameObject); // Destroi o item coletado
         }
         else if (collider.CompareTag("Carta")) // Adicionando lógica para destruir a Carta
         {
@@ -310,7 +333,7 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage, Vector2? knockbackDirection = null)
     {
-        if (isHit) return; // Se já está em estado de "hit", não faça nada
+        if (isHit || isDead) return; // Impede que o jogador receba dano se já estiver morto
 
         currentHealth -= damage;
         if (currentHealth <= 0)
@@ -320,9 +343,9 @@ public class Player : MonoBehaviour
         }
         else
         {
-            isHit = true; // Marca que o player está em estado de "hit"
-            Anim.SetTrigger("Hit"); // Chama a animação de hit
-            SetMove(false); // Desabilita a movimentação
+            isHit = true;
+            Anim.SetTrigger("Hit");
+            SetMove(false);
 
             if (knockbackDirection.HasValue)
             {
@@ -331,8 +354,27 @@ public class Player : MonoBehaviour
             }
         }
 
-        UpdateHealthBar();
+        UpdateHearts();
     }
+    private void UpdateHearts()
+    {
+        for (int i = 0; i < heartImages.Length; i++)
+        {
+            if (currentHealth >= (i + 1) * 2)
+            {
+                heartImages[i].sprite = fullHeart; // Coração cheio
+            }
+            else if (currentHealth == (i * 2) + 1)
+            {
+                heartImages[i].sprite = halfHeart; // Coração pela metade
+            }
+            else
+            {
+                heartImages[i].sprite = emptyHeart; // Coração vazio
+            }
+        }
+    }
+
     private IEnumerator HandleKnockback()
     {
         // Aguarde a duração do knockback (ajuste conforme necessário)
@@ -344,16 +386,13 @@ public class Player : MonoBehaviour
         isHit = false; // Reseta o estado de hit
         SetMove(true); // Habilita a movimentação
     }
-    private void UpdateHealthBar()
-    {
-        if (healthBarFill != null)
-        {
-            healthBarFill.fillAmount = currentHealth / maxHealth;
-        }
-    }
+    
 
     private void Die()
     {
+        if (isDead) return; // Impede que a animação de morte seja executada mais de uma vez
+
+        isDead = true; // Marca o Player como morto
         StartCoroutine(HandleDeath());
     }
 
@@ -361,11 +400,11 @@ public class Player : MonoBehaviour
     {
         Anim.SetTrigger("Dead");
         move = false;
-        Invoke("LoadGameOver",1.5f);
+        rig.velocity = Vector2.zero; // Para o movimento do Rigidbody
+        rig.isKinematic = true; // Desativa a física para evitar que o Player seja empurrado
         yield return new WaitForSeconds(2.0f);
-        move = true;
 
-        Respawn();
+        LoadGameOver();
     }
 
     private void LoadGameOver()
@@ -375,10 +414,12 @@ public class Player : MonoBehaviour
 
     private void Respawn()
     {
+        isDead = false; // Permite que o Player receba dano novamente
+        rig.isKinematic = false; // Reativa a física do Rigidbody
         Vector3 respawnPosition = CheckpointManager.Instance.GetLastCheckpointPosition();
         transform.position = respawnPosition;
         currentHealth = maxHealth;
-        UpdateHealthBar();
+        UpdateHearts();
     }
 
     public void SetMove(bool canMove)
@@ -417,7 +458,7 @@ public class Player : MonoBehaviour
             currentHealth = maxHealth; // Garante que a vida não ultrapasse o máximo
         }
 
-        UpdateHealthBar(); // Atualiza a barra de vida na interface
+        UpdateHearts(); // Atualiza a barra de vida na interface
     }
     private void ApplyKnockback(Vector2 direction)
     {
@@ -425,6 +466,7 @@ public class Player : MonoBehaviour
         rig.AddForce(direction * knockbackForce, ForceMode2D.Impulse); // Aplica a força de knockback
         StartCoroutine(ResetMovementAfterKnockback());
     }
+    
 
     private IEnumerator ResetMovementAfterKnockback()
     {

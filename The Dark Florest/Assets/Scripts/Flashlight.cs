@@ -156,7 +156,7 @@ public class FlashlightController : MonoBehaviour
             }
 
             currentFlashlight.transform.position = playerTransform.position + currentOffset;
-            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 354f);
+            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 0f);
         }
     }
 
