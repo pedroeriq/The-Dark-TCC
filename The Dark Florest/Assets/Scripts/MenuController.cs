@@ -10,7 +10,7 @@ public class MenuController : MonoBehaviour
     }
     public void StartGame()
     {
-        SceneManager.LoadScene("FINAL"); // Coloque o nome da cena do seu jogo
+        SceneManager.LoadScene("Introdução"); // Coloque o nome da cena do seu jogo
     }
 
     public void OpenOptions()
