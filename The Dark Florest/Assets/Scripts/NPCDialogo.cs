@@ -68,16 +68,18 @@ public class Conversa : MonoBehaviour
         }
 
         // Verifica se o índice está dentro dos limites dos diálogos
-        if (dialogoIndex < dialogoPlayer.Length + dialogoNPC.Length)
+        if (dialogoIndex < dialogoPlayer.Length && dialogoIndex < dialogoNPC.Length)
         {
             StartCoroutine(MostrarDialogo());
         }
         else
         {
+            // Se todos os diálogos foram exibidos, encerra o diálogo
             dialogoPainel.SetActive(false);
             startDialogo = false;
             dialogoIndex = 0;
 
+            // Libera o movimento do jogador
             var player = FindObjectOfType<Player>();
             player.SetMove(true); // Permite o movimento
         }
@@ -123,11 +125,11 @@ public class Conversa : MonoBehaviour
     {
         if (isPlayerTurn)
         {
-            return dialogoPlayer[dialogoIndex / 2]; // Player fala nos índices pares
+            return dialogoPlayer[dialogoIndex]; // Player fala nos índices ímpares
         }
         else
         {
-            return dialogoNPC[dialogoIndex / 2]; // NPC fala nos índices ímpares
+            return dialogoNPC[dialogoIndex]; // NPC fala nos índices pares
         }
     }
 
@@ -168,9 +170,10 @@ public class Conversa : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             var player = FindObjectOfType<Player>();
-            player.SetMove(false);      // Bloqueia o movimento
-            player.Anim.SetInteger("transition", 0); // Idle
-            StartDialogo();             // Inicia o diálogo
+            player.SetMove(false);               // Bloqueia o movimento
+            player.GetComponent<Rigidbody2D>().velocity = Vector2.zero; // Zera a velocidade
+            player.Anim.SetInteger("transition", 0); // Define o estado como idle
+            StartDialogo();                      // Inicia o diálogo
         }
     }
 
