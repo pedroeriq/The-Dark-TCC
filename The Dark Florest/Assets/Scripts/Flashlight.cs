@@ -8,6 +8,7 @@ public class FlashlightController : MonoBehaviour
     public Vector3 offset = new Vector3(0, 2.6f, 0); // Offset padrão da posição relativa ao Player
     public Vector3 runOffset; // Offset ao correr para a direita
     public Vector3 runOffsetLeft; // Offset ao correr para a esquerda
+    public Vector3 jumpOffset; // Offset durante o pulo
     public TMP_Text timerText; // Texto para exibir o tempo restante da lanterna
     public int maxUses = 3; // Número máximo de vezes que a lanterna pode ser usada
 
@@ -150,13 +151,18 @@ public class FlashlightController : MonoBehaviour
                     currentOffset = runOffset;
                 }
             }
+            // Verifica se o jogador está pulando
+            else if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("Player Jump"))
+            {
+                currentOffset = jumpOffset; // Offset durante o pulo
+            }
             else
             {
-                currentOffset = offset; // Offset padrão quando não está correndo
+                currentOffset = offset; // Offset padrão quando não está correndo ou pulando
             }
 
             currentFlashlight.transform.position = playerTransform.position + currentOffset;
-            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 0f);
+            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 338f);
         }
     }
 

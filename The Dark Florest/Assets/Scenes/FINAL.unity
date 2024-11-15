@@ -3173,6 +3173,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 563983782310684211, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 929245043297975412, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 2631281375479909685, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 3144973269284315266, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
     - target: {fileID: 3384053700563069514, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3253,13 +3269,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3934490322064314840, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 4485045098101490686, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 4654066258807593004, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 4923057114039935849, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 5129059766529985494, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 5774727638647747091, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 6019986343543558633, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
+    - target: {fileID: 7166023859105507814, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
+      propertyPath: m_FontData.m_Font
+      value: 
+      objectReference: {fileID: 12800000, guid: 6be1ab5e803a47143bd4fcdc249fbc54, type: 3}
     - target: {fileID: 9076345037224429518, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
       propertyPath: m_Name
       value: Dialogo
       objectReference: {fileID: 0}
     - target: {fileID: 9076345037224429518, guid: 5ec17969f625f5b498fbc4f869fa0fbd, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6018,13 +6066,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de03bc1478b52344895891aef3d4b763, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flashlightPrefab: {fileID: 5245525081103585917, guid: 08ae8c8fd18ec9b4dbdea9d826ecfc6a, type: 3}
-  flashlightLeftPrefab: {fileID: 5245525081103585917, guid: ce0d4f807d97b154086412192882e736, type: 3}
+  flashlightPrefab: {fileID: 8512930244552213279, guid: 97bca7a9a770ce24084963dbe9d97d49, type: 3}
   flashlightDuration: 40
+  offset: {x: 0, y: 3, z: 0}
+  runOffset: {x: 0.5, y: 2.9, z: 0}
+  runOffsetLeft: {x: -0.5, y: 2.9, z: 0}
+  jumpOffset: {x: 0, y: 2.8, z: 0}
   timerText: {fileID: 1541255051}
   maxUses: 1
-  flashlightOffsetRight: {x: 0.33, y: 2.9, z: 0}
-  flashlightOffsetLeft: {x: -0.33, y: 2.9, z: 0}
 --- !u!4 &691384289
 Transform:
   m_ObjectHideFlags: 0
