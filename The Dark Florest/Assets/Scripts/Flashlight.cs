@@ -3,14 +3,13 @@ using TMPro;
 
 public class FlashlightController : MonoBehaviour
 {
-    public GameObject flashlightPrefab; // Prefab da lanterna para a direita
-    public GameObject flashlightLeftPrefab; // Prefab da lanterna para a esquerda
+    public GameObject flashlightPrefab; // Prefab da lanterna
     public float flashlightDuration = 30f; // Duração total da lanterna
+    public Vector3 offset = new Vector3(0, 2.6f, 0); // Offset padrão da posição relativa ao Player
+    public Vector3 runOffset; // Offset ao correr para a direita
+    public Vector3 runOffsetLeft; // Offset ao correr para a esquerda
     public TMP_Text timerText; // Texto para exibir o tempo restante da lanterna
     public int maxUses = 3; // Número máximo de vezes que a lanterna pode ser usada
-
-    public Vector3 flashlightOffsetRight; // Offset para a posição da lanterna quando o jogador olha para a direita
-    public Vector3 flashlightOffsetLeft; // Offset para a posição da lanterna quando o jogador olha para a esquerda
 
     private GameObject currentFlashlight; // Referência à lanterna instanciada
     private Transform playerTransform; // Referência ao Transform do Player
@@ -19,8 +18,6 @@ public class FlashlightController : MonoBehaviour
     private bool isFlashlightActive; // Estado da lanterna
     private int remainingUses; // Contador de usos restantes
     private bool hasBattery; // Indica se o jogador coletou a pilha
-    private Rigidbody2D playerRigidbody; // Referência ao Rigidbody2D do Player
-    private bool isFacingRight = true; // Direção visual do jogador (inicialmente para a direita)
 
     void Start()
     {
@@ -30,7 +27,6 @@ public class FlashlightController : MonoBehaviour
         {
             playerTransform = player.transform;
             playerAnimator = player.GetComponent<Animator>(); // Obtém o Animator do jogador
-            playerRigidbody = player.GetComponent<Rigidbody2D>(); // Obtém o Rigidbody2D do jogador
         }
         else
         {
@@ -63,18 +59,8 @@ public class FlashlightController : MonoBehaviour
 
     private void InstantiateFlashlight()
     {
-        // Verifica a direção do jogador e instancia a lanterna corretamente
-        if (isFacingRight)
-        {
-            // Instancia a lanterna para a direita e ajusta o offset
-            currentFlashlight = Instantiate(flashlightPrefab, playerTransform.position + flashlightOffsetRight, Quaternion.identity);
-        }
-        else
-        {
-            // Instancia a lanterna para a esquerda e ajusta o offset
-            currentFlashlight = Instantiate(flashlightLeftPrefab, playerTransform.position + flashlightOffsetLeft, Quaternion.Euler(0f, 180f, 0f));
-        }
-
+        // Instancia a lanterna e ajusta sua rotação para apontar para baixo
+        currentFlashlight = Instantiate(flashlightPrefab, playerTransform.position + offset, Quaternion.Euler(90f, 0f, 0f));
         remainingDuration = flashlightDuration; // Define a duração inicial
         isFlashlightActive = true; // Define a lanterna como ativa
         StartCoroutine(HandleFlashlightDuration());
@@ -143,38 +129,44 @@ public class FlashlightController : MonoBehaviour
         {
             FollowPlayer();
         }
-
-        // Verifica a direção visual do jogador
-        if (playerRigidbody.velocity.x > 0)
-        {
-            isFacingRight = true; // Direita
-        }
-        else if (playerRigidbody.velocity.x < 0)
-        {
-            isFacingRight = false; // Esquerda
-        }
     }
 
     void FollowPlayer()
     {
         if (currentFlashlight != null)
         {
-            // Atualiza a posição da lanterna para seguir o jogador
-            if (isFacingRight)
+            Vector3 currentOffset;
+
+            // Verifica se a animação atual é "Player Run" para ajustar o offset
+            if (playerAnimator.GetCurrentAnimatorStateInfo(0).IsName("Player Run"))
             {
-                currentFlashlight.transform.position = playerTransform.position + flashlightOffsetRight;
-                currentFlashlight.transform.rotation = Quaternion.Euler(0f, 0f, 0f); // Lanterna para a direita
+                // Se a velocidade horizontal do jogador for maior que 0, significa que ele está indo para a direita
+                if (playerTransform.GetComponent<Rigidbody2D>().velocity.x < 0) // Correndo para a esquerda
+                {
+                    currentOffset = runOffsetLeft;
+                }
+                else // Correndo para a direita
+                {
+                    currentOffset = runOffset;
+                }
             }
             else
             {
-                currentFlashlight.transform.position = playerTransform.position + flashlightOffsetLeft;
-                currentFlashlight.transform.rotation = Quaternion.Euler(0f, 180f, 0f); // Lanterna para a esquerda
+                currentOffset = offset; // Offset padrão quando não está correndo
             }
+
+            currentFlashlight.transform.position = playerTransform.position + currentOffset;
+            currentFlashlight.transform.rotation = playerTransform.rotation * Quaternion.Euler(0f, 0f, 0f);
         }
     }
 
     public void CollectBattery()
     {
         hasBattery = true; // O jogador coletou a pilha
+    }
+
+    public void SetFlashlightOffset(Vector3 newOffset)
+    {
+        offset = newOffset;
     }
 }
