@@ -313,7 +313,7 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Bloco"))
         {
-            TakeDamage(enemyDamage); // Apenas aplica dano sem knockback
+            TakeDamage(enemyDamage = 10); // Apenas aplica dano sem knockback
         }
     }
     private void OnTriggerEnter2D(Collider2D collider)
@@ -329,6 +329,19 @@ public class Player : MonoBehaviour
         {
             Destroy(collider.gameObject); // Destrói a Carta
         }
+        else if (collider.gameObject.CompareTag("Aurea BossFinal"))
+        {
+            // Impulso para cima com leve força lateral (X aleatório)
+            float knockbackForce = 0.8f;
+            Vector2 knockbackDirection = new Vector2(Random.Range(-1f, 1f), 1).normalized * knockbackForce; // Impulso aleatório no eixo X e forte no Y
+    
+            // Aplica dano com o impulso
+            TakeDamage(enemyDamage, knockbackDirection);
+        }
+
+
+
+
     }
 
     public void TakeDamage(int damage, Vector2? knockbackDirection = null)
