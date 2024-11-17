@@ -11,6 +11,7 @@ public class SpikeFall : MonoBehaviour
     public float detectionHeight = 2f; // Altura da área de detecção
     public float fallDistance = 3f; // Distância que o Thwomp cai
     public float waitTime = 1f; // Tempo de espera antes de subir
+    public int damage = 10; // Dano causado ao jogador
 
     private Vector2 originalPosition; // Posição inicial do Thwomp
     private bool isFalling = false; // Verifica se está caindo
@@ -82,5 +83,20 @@ public class SpikeFall : MonoBehaviour
         Gizmos.color = Color.red;
         Vector3 boxSize = new Vector3(detectionRange, detectionHeight, 0);
         Gizmos.DrawWireCube(new Vector3(transform.position.x, transform.position.y - detectionHeight / 2, transform.position.z), boxSize);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // Verifica se o objeto colidido é o jogador
+        if (collision.CompareTag("Player"))
+        {
+            // Aplica dano ao jogador
+            Player playerHealth = collision.GetComponent<Player>();
+            if (playerHealth != null)
+            {
+                playerHealth.TakeDamage(damage);
+            }
+            
+        }
     }
 }
