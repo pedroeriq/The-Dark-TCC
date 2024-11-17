@@ -311,10 +311,7 @@ public class Player : MonoBehaviour
             Vector2 knockbackDirection = (transform.position - collision.transform.position).normalized; // Direção oposta ao inimigo
             TakeDamage(enemyDamage, knockbackDirection); // Aplica o dano e o knockback
         }
-        else if (collision.gameObject.CompareTag("Bloco"))
-        {
-            TakeDamage(enemyDamage = 1); // Apenas aplica dano sem knockback
-        }
+        
         else if (collision.gameObject.CompareTag("Espinho"))
         {
             TakeDamage(enemyDamage = 10); // Apenas aplica dano sem knockback
@@ -342,6 +339,11 @@ public class Player : MonoBehaviour
             // Aplica dano com o impulso
             TakeDamage(enemyDamage, knockbackDirection);
         }
+        else if (collider.gameObject.CompareTag("Bloco"))
+        {
+            TakeDamage(enemyDamage = 1); // Apenas aplica dano sem knockback
+
+        }
 
 
 
@@ -350,7 +352,7 @@ public class Player : MonoBehaviour
 
     public void TakeDamage(int damage, Vector2? knockbackDirection = null)
     {
-        if (isHit || isDead) return; // Impede que o jogador receba dano se já estiver morto
+        if (isHit || isDead) return; // Impede que o jogador receba dano se já estiver morto ou em hit
 
         currentHealth -= damage;
         if (currentHealth <= 0)
@@ -362,17 +364,29 @@ public class Player : MonoBehaviour
         {
             isHit = true;
             Anim.SetTrigger("Hit");
-            SetMove(false);
+            SetMove(false); // Desativa a movimentação
 
             if (knockbackDirection.HasValue)
             {
                 ApplyKnockback(knockbackDirection.Value);
                 StartCoroutine(HandleKnockback());
             }
+            else
+            {
+                // Se não houver knockback, reative o movimento após a animação
+                StartCoroutine(HandleHitOnly());
+            }
         }
 
         UpdateHearts();
     }
+    private IEnumerator HandleHitOnly()
+    {
+        yield return new WaitForSeconds(0.5f); // Aguarda a duração da animação de hit
+        isHit = false; // Reseta o estado de hit
+        SetMove(true); // Habilita a movimentação
+    }
+    
     private void UpdateHearts()
     {
         for (int i = 0; i < heartImages.Length; i++)
@@ -442,6 +456,7 @@ public class Player : MonoBehaviour
     public void SetMove(bool canMove)
     {
         move = canMove;
+        rig.velocity = Vector2.zero;
     }
 
     public bool GetMove()
@@ -484,6 +499,7 @@ public class Player : MonoBehaviour
         StartCoroutine(ResetMovementAfterKnockback());
     }
     
+
 
     private IEnumerator ResetMovementAfterKnockback()
     {

@@ -84,19 +84,5 @@ public class SpikeFall : MonoBehaviour
         Vector3 boxSize = new Vector3(detectionRange, detectionHeight, 0);
         Gizmos.DrawWireCube(new Vector3(transform.position.x, transform.position.y - detectionHeight / 2, transform.position.z), boxSize);
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        // Verifica se o objeto colidido é o jogador
-        if (collision.CompareTag("Player"))
-        {
-            // Aplica dano ao jogador
-            Player playerHealth = collision.GetComponent<Player>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage);
-            }
-            
-        }
-    }
+    
 }
