@@ -27,5 +27,6 @@ public class SliderMovement : MonoBehaviour
             temp.motorSpeed = -2;
             slider.motor = temp;
         }
+        
     }
 }

@@ -121,8 +121,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: 23.02855, y: 19.984001, z: 0}
-    m_Extent: {x: 25.24165, y: 23.0018, z: 0}
+    m_Center: {x: 26.49365, y: 21.41585, z: 0}
+    m_Extent: {x: 28.70725, y: 24.43365, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -133,11 +133,11 @@ MonoBehaviour:
   m_ShapeLightFalloffSize: 2.63
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: 43.669132, y: 22.15142, z: -0.00009567077}
-  - {x: 41.446922, y: 40.355034, z: -0.000054338838}
+  - {x: 50.45062, y: 25.41951, z: -0.00009510578}
+  - {x: 51.628, y: 43.218964, z: -0.000043488315}
   - {x: 0.41722307, y: -0.1395046, z: 0}
   - {x: 0.77123535, y: -0.38857898, z: 0}
-  - {x: 45.640324, y: 6.0023146, z: -0.00017199927}
+  - {x: 52.570366, y: 5.512393, z: -0.00017498006}
 --- !u!61 &7174309770689889302
 BoxCollider2D:
   m_ObjectHideFlags: 0

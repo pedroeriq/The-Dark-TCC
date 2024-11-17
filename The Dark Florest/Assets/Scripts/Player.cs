@@ -313,6 +313,10 @@ public class Player : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Bloco"))
         {
+            TakeDamage(enemyDamage = 1); // Apenas aplica dano sem knockback
+        }
+        else if (collision.gameObject.CompareTag("Espinho"))
+        {
             TakeDamage(enemyDamage = 10); // Apenas aplica dano sem knockback
         }
     }
