@@ -19,6 +19,7 @@ TagManager:
   - Carta
   - Aurea BossFinal
   - Espinho
+  - Plataforma
   layers:
   - Default
   - TransparentFX
