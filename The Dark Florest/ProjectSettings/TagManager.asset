@@ -20,6 +20,7 @@ TagManager:
   - Aurea BossFinal
   - Espinho
   - Plataforma
+  - ResetPatrol
   layers:
   - Default
   - TransparentFX

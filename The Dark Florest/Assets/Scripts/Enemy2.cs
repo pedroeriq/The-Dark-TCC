@@ -158,20 +158,7 @@ public class Enemy2 : MonoBehaviour
         {
             vida -= dano;
             Debug.Log($"Inimigo recebeu {dano} de dano. Vida restante: {vida}");
-
-            // Aplica knockback se o inimigo não estiver morto
-            if (vida > 0)
-            {
-                // Calcula a direção do knockback baseada na posição do jogador
-                Vector2 knockbackDirection = (transform.position - player.position).normalized;
-
-                // Aplica a força de knockback (ajuste a força para um valor adequado)
-                rb2d.AddForce(knockbackDirection * knockbackForce, ForceMode2D.Impulse); // Adiciona a força de impulso
-
-                // Pausa o movimento do inimigo por um breve momento
-                StartCoroutine(HandleKnockback());
-            }
-
+        
             if (vida <= 0)
             {
                 vida = 0;
@@ -180,22 +167,28 @@ public class Enemy2 : MonoBehaviour
             else
             {
                 animator.SetTrigger("hit");
+                StartCoroutine(PauseAfterHit()); // Pausa o movimento após o dano
             }
         }
     }
 
-    private IEnumerator HandleKnockback()
+    private IEnumerator PauseAfterHit()
     {
-        // Pausa o movimento do inimigo por um tempo curto (durante o knockback)
-        float originalSpeed = speed;
-        speed = 0f; // Para o inimigo de se mover enquanto aplica o knockback
+        float originalSpeed = speed; // Salva a velocidade original
+        float originalChaseSpeed = chaseSpeed;
 
-        // Duração do efeito de knockback
-        yield return new WaitForSeconds(knockbackDuration);
+        // Para o movimento
+        speed = 0f;
+        chaseSpeed = 0f;
 
-        // Retorna à velocidade de perseguição original
+        yield return new WaitForSeconds(0.4f); // Duração da pausa (0.5 segundos, ajuste conforme necessário)
+
+        // Restaura a velocidade original
         speed = originalSpeed;
+        chaseSpeed = originalChaseSpeed;
     }
+
+    
 
     private void Die()
     {
@@ -231,7 +224,7 @@ public class Enemy2 : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (isDead) return; // Se o inimigo já estiver morto, não realiza ataques
+        if (isDead) return; // Se o inimigo já estiver morto, não realiza nenhuma ação
 
         if (other.CompareTag("Player"))
         {
@@ -239,6 +232,17 @@ public class Enemy2 : MonoBehaviour
             {
                 attackCoroutine = StartCoroutine(AttackCoroutine(other.GetComponent<Player>()));
             }
+        }
+        else if (other.CompareTag("ResetPatrol"))
+        {
+            // Reseta para patrulha normal
+            isChasingPlayer = false; // Para a perseguição ao jogador
+            target = pointA; // Define o ponto inicial como alvo
+            tocar = true; // Permite que a música de perseguição toque novamente no futuro
+            Musica.Stop(); // Para a música de perseguição
+            Grito.Stop(); // Para o grito de perseguição
+
+            Debug.Log("Inimigo voltou à patrulha normal.");
         }
     }
 

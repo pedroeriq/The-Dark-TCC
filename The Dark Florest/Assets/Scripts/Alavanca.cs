@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class LeverControl : MonoBehaviour
 {
-    public Sprite redLever;    // Sprite da alavanca na cor vermelha
-    public Sprite greenLever;  // Sprite da alavanca na cor verde
-    public Sprite blueLever;   // Sprite da alavanca na cor azul
-    public Sprite yellowLever; // Sprite da alavanca na cor amarela
+    public Sprite CimaLever;    // Sprite da alavanca na cor vermelha
+    public Sprite Cima1Lever;  // Sprite da alavanca na cor verde
+    public Sprite DireitoLever;   // Sprite da alavanca na cor azul
+    public Sprite EsquerdoLever; // Sprite da alavanca na cor amarela
 
     public int GetLeverState()
     {
@@ -21,7 +21,7 @@ public class LeverControl : MonoBehaviour
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        spriteRenderer.sprite = redLever; // Alavanca começa vermelha
+        spriteRenderer.sprite = CimaLever; // Alavanca começa vermelha
     }
 
     void Update()
@@ -38,22 +38,22 @@ public class LeverControl : MonoBehaviour
         if (leverState == 0)
         {
             leverState = 1; // Vai para Verde
-            spriteRenderer.sprite = greenLever;
+            spriteRenderer.sprite = DireitoLever;
         }
         else if (leverState == 1)
         {
             leverState = 2; // Vai para Azul
-            spriteRenderer.sprite = blueLever;
+            spriteRenderer.sprite = Cima1Lever;
         }
         else if (leverState == 2)
         {
             leverState = 3; // Vai para Amarelo
-            spriteRenderer.sprite = yellowLever;
+            spriteRenderer.sprite = EsquerdoLever;
         }
         else if (leverState == 3)
         {
             leverState = 0; // Volta para Vermelho
-            spriteRenderer.sprite = redLever;
+            spriteRenderer.sprite = CimaLever;
         }
     }
 

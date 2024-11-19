@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Cura : MonoBehaviour
 {
-    public int valorCura = 20; // Quantidade de vida que será restaurada
+    public int valorCura = 2; // Quantidade de vida que será restaurada
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
