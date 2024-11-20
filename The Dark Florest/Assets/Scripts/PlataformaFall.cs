@@ -16,7 +16,7 @@ public class PlataformaFall : MonoBehaviour
 
     IEnumerator Fall()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.5f);
         rb.bodyType = RigidbodyType2D.Dynamic;
         yield return new WaitForSeconds(fallDelay); // Espera o tempo de queda
         rb.bodyType = RigidbodyType2D.Static; // Congela a plataforma

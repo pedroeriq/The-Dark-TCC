@@ -181,7 +181,7 @@ public class Enemy2 : MonoBehaviour
         speed = 0f;
         chaseSpeed = 0f;
 
-        yield return new WaitForSeconds(0.4f); // Duração da pausa (0.5 segundos, ajuste conforme necessário)
+        yield return new WaitForSeconds(0.8f); // Duração da pausa (0.5 segundos, ajuste conforme necessário)
 
         // Restaura a velocidade original
         speed = originalSpeed;

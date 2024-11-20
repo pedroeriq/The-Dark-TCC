@@ -5,104 +5,122 @@ using UnityEngine.UI;
 
 public class Conversa : MonoBehaviour
 {
-    // Diálogos do Player e do NPC
     public string[] dialogoPlayer;
     public string[] dialogoNPC;
     public int dialogoIndex;
 
-    public GameObject dialogoPainel;    // Painel de diálogo compartilhado
+    public GameObject dialogoPainel;
+    public Image painelImage; // Referência à Image do painel
 
-    // Player
-    public Text dialogoTextPlayer;      // Texto de diálogo do Player
-    public Text namePlayer;             // Nome do Player
-    public Image imagePlayer;           // Imagem do Player
-    public Sprite spritePlayer;
+    public Text dialogoTextPlayer;
+    public Text namePlayer;
 
-    // NPC
-    public Text dialogoTextNPC;         // Texto de diálogo do NPC
-    public Text nameNPC;                // Nome do NPC
-    public Image imageNPC;              // Imagem do NPC
-    public Sprite spriteNPC;
+    public Text dialogoTextNPC;
+    public Text nameNPC;
 
     public bool startDialogo;
-    private bool isPlayerTurn = true;   // Variável para controlar de quem é a vez de falar
+    private bool isPlayerTurn = true;
+    private bool isPlayerNearby = false; // Verifica se o jogador está próximo
+    private bool skipTyping = false; // Flag para pular a animação de digitação
 
-    // Start é chamado antes do primeiro frame
     void Start()
     {
         dialogoPainel.SetActive(false);
-        // Inicializa os elementos como invisíveis
         namePlayer.gameObject.SetActive(false);
-        imagePlayer.gameObject.SetActive(false);
         dialogoTextPlayer.text = "";
 
         nameNPC.gameObject.SetActive(false);
-        imageNPC.gameObject.SetActive(false);
         dialogoTextNPC.text = "";
     }
 
-    // Update é chamado uma vez por frame
     void Update()
     {
-        if (startDialogo && GetCurrentText().text == GetCurrentDialog())
+        // Verifica se o jogador está próximo e pressionou a tecla E
+        if (isPlayerNearby && !startDialogo && Input.GetKeyDown(KeyCode.E))
         {
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            StartDialogo();
+        }
+
+        // Controle do diálogo durante a conversa com E
+        if (startDialogo)
+        {
+            if (GetCurrentText().text == GetCurrentDialog()) // Se o texto está completo
             {
-                ProximoDialogo();
+                if (Input.GetKeyDown(KeyCode.E)) // Se pressionar E novamente
+                {
+                    ProximoDialogo();
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.E)) // Se pressionar E antes do texto terminar
+            {
+                skipTyping = true; // Habilita para pular a animação de digitação
+                StopAllCoroutines(); // Interrompe qualquer Coroutine de digitação em andamento
+                GetCurrentText().text = GetCurrentDialog(); // Exibe o texto completo imediatamente
             }
         }
     }
 
-    // Exibe o próximo diálogo alternando entre Player e NPC
     void ProximoDialogo()
     {
-        // Alterna a vez de falar antes de incrementar o índice
         if (isPlayerTurn)
         {
-            isPlayerTurn = false; // Próxima fala será do NPC
+            isPlayerTurn = false;
         }
         else
         {
-            isPlayerTurn = true; // Próxima fala será do Player
-            dialogoIndex++; // Incrementa o índice após a fala do NPC
+            isPlayerTurn = true;
+            dialogoIndex++;
         }
 
-        // Verifica se o índice está dentro dos limites dos diálogos
         if (dialogoIndex < dialogoPlayer.Length && dialogoIndex < dialogoNPC.Length)
         {
             StartCoroutine(MostrarDialogo());
         }
         else
         {
-            // Se todos os diálogos foram exibidos, encerra o diálogo
             dialogoPainel.SetActive(false);
             startDialogo = false;
             dialogoIndex = 0;
 
-            // Libera o movimento do jogador
             var player = FindObjectOfType<Player>();
-            player.SetMove(true); // Permite o movimento
+            player.SetMove(true);
         }
     }
 
-    // Inicia o diálogo
     void StartDialogo()
     {
         dialogoIndex = 0;
         startDialogo = true;
         dialogoPainel.SetActive(true);
-        // Exibe os elementos do Player e oculta os do NPC no início
+        StartCoroutine(AnimarPainel()); // Inicia a animação de transição do painel
         MostrarElementosPlayer();
         StartCoroutine(MostrarDialogo());
     }
 
-    // Mostra o diálogo letra por letra
+    IEnumerator AnimarPainel()
+    {
+        // A imagem começa com fillAmount = 0
+        painelImage.fillAmount = 0;
+
+        float tempoAnimacao = 1f; // Tempo para a animação, você pode ajustar conforme necessário
+        float tempoPassado = 0f;
+
+        // Anima a transição de 0 a 1
+        while (tempoPassado < tempoAnimacao)
+        {
+            tempoPassado += Time.deltaTime;
+            painelImage.fillAmount = Mathf.Lerp(0, 1, tempoPassado / tempoAnimacao); // Lerp para suavizar a transição
+            yield return null;
+        }
+
+        painelImage.fillAmount = 1; // Garantir que o valor final seja exatamente 1
+    }
+
     IEnumerator MostrarDialogo()
     {
-        Text currentText = GetCurrentText(); // Pega o texto atual (Player ou NPC)
-        currentText.text = ""; // Limpa o texto atual
+        Text currentText = GetCurrentText();
+        currentText.text = "";
 
-        // Mostra o nome e a imagem do falante atual
         if (isPlayerTurn)
         {
             MostrarElementosPlayer();
@@ -112,54 +130,46 @@ public class Conversa : MonoBehaviour
             MostrarElementosNPC();
         }
 
-        // Mostra o diálogo letra por letra
-        foreach (char letter in GetCurrentDialog())
+        string dialog = GetCurrentDialog();
+
+        // Animação de digitação com a opção de pular
+        foreach (char letter in dialog)
         {
+            if (skipTyping) // Se for para pular a digitação
+            {
+                currentText.text = dialog; // Exibe o texto completo
+                break;
+            }
             currentText.text += letter;
             yield return new WaitForSeconds(0.1f);
         }
+
+        skipTyping = false; // Reseta a flag após exibir o texto completo
     }
 
-    // Alterna entre a fala do Player e do NPC
     string GetCurrentDialog()
     {
-        if (isPlayerTurn)
-        {
-            return dialogoPlayer[dialogoIndex]; // Player fala nos índices ímpares
-        }
-        else
-        {
-            return dialogoNPC[dialogoIndex]; // NPC fala nos índices pares
-        }
+        return isPlayerTurn ? dialogoPlayer[dialogoIndex] : dialogoNPC[dialogoIndex];
     }
 
-    // Mostra os elementos do Player
     void MostrarElementosPlayer()
     {
-        namePlayer.text = "Elias"; // Nome do Player
-        imagePlayer.sprite = spritePlayer; // Imagem do Player
-        namePlayer.gameObject.SetActive(true); // Mostra o nome do Player
-        imagePlayer.gameObject.SetActive(true); // Mostra a imagem do Player
-        dialogoTextPlayer.text = ""; // Limpa o texto do diálogo do Player
-        dialogoTextNPC.text = ""; // Limpa o texto do diálogo do NPC (caso esteja visível)
-        nameNPC.gameObject.SetActive(false); // Oculta o nome do NPC
-        imageNPC.gameObject.SetActive(false); // Oculta a imagem do NPC
+        namePlayer.text = "Elias"; // Nome do player
+        namePlayer.gameObject.SetActive(true);
+        dialogoTextPlayer.text = "";
+        dialogoTextNPC.text = "";
+        nameNPC.gameObject.SetActive(false);
     }
 
-    // Mostra os elementos do NPC
     void MostrarElementosNPC()
     {
         nameNPC.text = "Yan"; // Nome do NPC
-        imageNPC.sprite = spriteNPC; // Imagem do NPC
-        nameNPC.gameObject.SetActive(true); // Mostra o nome do NPC
-        imageNPC.gameObject.SetActive(true); // Mostra a imagem do NPC
-        dialogoTextNPC.text = ""; // Limpa o texto do diálogo do NPC
-        dialogoTextPlayer.text = ""; // Limpa o texto do diálogo do Player (caso esteja visível)
-        namePlayer.gameObject.SetActive(false); // Oculta o nome do Player
-        imagePlayer.gameObject.SetActive(false); // Oculta a imagem do Player
+        nameNPC.gameObject.SetActive(true);
+        dialogoTextNPC.text = "";
+        dialogoTextPlayer.text = "";
+        namePlayer.gameObject.SetActive(false);
     }
 
-    // Pega o Text atual, dependendo de quem está falando
     Text GetCurrentText()
     {
         return isPlayerTurn ? dialogoTextPlayer : dialogoTextNPC;
@@ -169,11 +179,7 @@ public class Conversa : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            var player = FindObjectOfType<Player>();
-            player.SetMove(false);               // Bloqueia o movimento
-            player.GetComponent<Rigidbody2D>().velocity = Vector2.zero; // Zera a velocidade
-            player.Anim.SetInteger("transition", 0); // Define o estado como idle
-            StartDialogo();                      // Inicia o diálogo
+            isPlayerNearby = true; // Marca que o jogador está próximo
         }
     }
 
@@ -181,7 +187,8 @@ public class Conversa : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            startDialogo = false;       // Para o diálogo quando sair do gatilho
+            isPlayerNearby = false; // Marca que o jogador saiu da área
+            startDialogo = false;
         }
     }
 }
