@@ -220,6 +220,10 @@ public class Enemy2 : MonoBehaviour
             ReceberDano(danoEspecial);
             Destroy(collision.gameObject);
         }
+        else if (collision.gameObject.CompareTag("Espinho"))
+        {
+            ReceberDano(10); // Apenas aplica dano sem knockback
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)

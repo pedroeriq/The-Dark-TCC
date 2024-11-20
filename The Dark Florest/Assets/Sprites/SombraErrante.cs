@@ -144,10 +144,12 @@ public class SombraErrante : MonoBehaviour
         if (collision.gameObject.CompareTag("Bala"))
         {
             ReceberDano(danoNormal);
+            Destroy(collision.gameObject);
         }
         else if (collision.gameObject.CompareTag("SpecialAmmo"))
         {
             ReceberDano(danoEspecial);
+            Destroy(collision.gameObject);
         }
     }
 
