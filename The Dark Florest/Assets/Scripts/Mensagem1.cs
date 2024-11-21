@@ -1,0 +1,51 @@
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI; // Para acessar os componentes Image e UI
+
+public class Mensagem1 : MonoBehaviour
+{
+    public GameObject painelMensagem;   // Painel que contém a imagem
+    public Image mensagemImagem;        // Referência para a imagem da mensagem
+    public Sprite imagem;               // Imagem que será exibida
+    private bool mensagemExibida = false; // Para controlar se a mensagem já foi exibida
+
+    // Start é chamado antes do primeiro frame
+    void Start()
+    {
+        painelMensagem.SetActive(false);  // Inicializa o painel como invisível
+    }
+
+    // Método chamado quando o Player colide com o objeto
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player") && !mensagemExibida)
+        {
+            // Exibe a imagem e o painel
+            ExibirImagem();
+        }
+    }
+
+    // Exibe a imagem
+    void ExibirImagem()
+    {
+        mensagemExibida = true;                   // Marca como exibida
+        mensagemImagem.sprite = imagem;          // Define a imagem a ser exibida
+        painelMensagem.SetActive(true);          // Torna o painel de imagem visível
+    }
+
+    // Update é chamado uma vez por frame
+    void Update()
+    {
+        if (mensagemExibida && Input.GetKeyDown(KeyCode.Escape))  // Verifica se o Esc foi pressionado
+        {
+            OcultarMensagem();  // Oculta a mensagem quando o jogador apertar Esc
+        }
+    }
+
+    // Oculta a imagem e o painel
+    void OcultarMensagem()
+    {
+        painelMensagem.SetActive(false);               // Oculta o painel de mensagem
+        Destroy(gameObject);                           // Destroi o objeto da mensagem
+    }
+}

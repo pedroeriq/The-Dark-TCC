@@ -26,7 +26,7 @@ public class LeverControl : MonoBehaviour
 
     void Update()
     {
-        if (isNearLever && Input.GetKeyDown(KeyCode.DownArrow)) // Detecta seta para baixo
+        if (isNearLever && Input.GetKeyDown(KeyCode.E)) // Detecta seta para baixo
         {
             ToggleLever(); // Alterna o estado da alavanca
         }

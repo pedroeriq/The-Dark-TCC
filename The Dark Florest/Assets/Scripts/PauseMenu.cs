@@ -14,6 +14,15 @@ public class PauseMenu : MonoBehaviour
         {
             carta.SetActive(false);
         }
+
+        // Verifica se alguma carta já foi coletada e ativa as sprites correspondentes
+        foreach (var carta in cartaSprites)
+        {
+            if (carta.activeSelf) // Se já foi coletada e ativada, deixa visível
+            {
+                carta.SetActive(true);
+            }
+        }
     }
 
     public void ShowPauseMenu()
@@ -46,7 +55,7 @@ public class PauseMenu : MonoBehaviour
 
     public void EnableCartaSprite(int cartaIndex)
     {
-        if (cartaIndex >= 0 && cartaIndex < cartaSprites.Length)
+        if (cartaIndex > 0 && cartaIndex < cartaSprites.Length)
         {
             cartaSprites[cartaIndex].SetActive(true); // Ativa a sprite da carta específica
         }

@@ -3,6 +3,7 @@ using UnityEngine;
 public class BatteryController : MonoBehaviour
 {
     private FlashlightController flashlightController; // Referência ao controlador da lanterna
+    public float additionalTime; // Tempo extra em segundos que a pilha fornece
 
     void Start()
     {
@@ -10,13 +11,11 @@ public class BatteryController : MonoBehaviour
         flashlightController = FindObjectOfType<FlashlightController>();
     }
 
-    // Método chamado quando outro Collider2D entra em contato com o Collider2D deste objeto
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Verifica se o objeto colidido tem a tag "Player"
         if (other.CompareTag("Player"))
         {
-            // Coleta a pilha e notifica o controlador da lanterna
+            // Notifica o controlador da lanterna e passa o tempo adicional
             flashlightController.CollectBattery();
             Destroy(gameObject); // Destrói a pilha
         }

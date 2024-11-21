@@ -7,10 +7,8 @@ public class CartaColetavel : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Verifica se o objeto que colidiu é o Player
         if (collision.CompareTag("Player"))
         {
-            // Ativa a sprite da carta no menu de pausa
             if (cartaSprite != null)
             {
                 cartaSprite.SetActive(true);
@@ -20,10 +18,12 @@ public class CartaColetavel : MonoBehaviour
             PauseMenu pauseMenu = FindObjectOfType<PauseMenu>();
             if (pauseMenu != null)
             {
+                // Exibe o menu de pausa para garantir que a carta será visível
+                pauseMenu.ShowPauseMenu();
                 pauseMenu.EnableCartaSprite(cartaIndex);
             }
 
-            // Destrói a carta coletável ao colidir com o Player
+            // Destrói a carta coletável
             Destroy(gameObject);
         }
     }

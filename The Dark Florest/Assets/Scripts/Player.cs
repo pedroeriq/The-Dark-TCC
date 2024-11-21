@@ -322,34 +322,26 @@ public class Player : MonoBehaviour
         if (collider.CompareTag("SpecialAmmo"))
         {
             hasSpecialAmmo = true;
-            specialAmmoCount = specialAmmoLimit; // Define a quantidade máxima de munição especial
-            UpdateSpecialAmmoText(); // Atualiza o texto na tela
-            Destroy(collider.gameObject); // Destroi o item coletado
+
+            // Soma o limite da munição especial ao contador atual
+            specialAmmoCount += specialAmmoLimit;
+
+            // Atualiza o texto da munição na interface
+            UpdateSpecialAmmoText();
+
+            // Destroi o objeto coletável
+            Destroy(collider.gameObject);
         }
         else if (collider.CompareTag("Carta")) // Adicionando lógica para destruir a Carta
         {
             Destroy(collider.gameObject); // Destrói a Carta
         }
-        else if (collider.gameObject.CompareTag("Aurea BossFinal"))
-        {
-            // Impulso para cima com leve força lateral (X aleatório)
-            float knockbackForce = 0.8f;
-            Vector2 knockbackDirection = new Vector2(Random.Range(-1f, 1f), 1).normalized * knockbackForce; // Impulso aleatório no eixo X e forte no Y
-    
-            // Aplica dano com o impulso
-            TakeDamage(enemyDamage, knockbackDirection);
-        }
         else if (collider.gameObject.CompareTag("Bloco"))
         {
             TakeDamage(enemyDamage = 1); // Apenas aplica dano sem knockback
-
         }
-
-
-
-
     }
-
+    
     public void TakeDamage(int damage, Vector2? knockbackDirection = null)
     {
         if (isHit || isDead) return; // Impede que o jogador receba dano se já estiver morto ou em hit

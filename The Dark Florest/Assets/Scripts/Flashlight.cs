@@ -3,6 +3,7 @@ using TMPro;
 
 public class FlashlightController : MonoBehaviour
 {
+    
     public GameObject flashlightPrefab; // Prefab da lanterna
     public float flashlightDuration = 30f; // Duração total da lanterna
     public Vector3 offset = new Vector3(0, 2.6f, 0); // Offset padrão da posição relativa ao Player
@@ -10,7 +11,7 @@ public class FlashlightController : MonoBehaviour
     public Vector3 runOffsetLeft; // Offset ao correr para a esquerda
     public Vector3 jumpOffset; // Offset durante o pulo
     public TMP_Text timerText; // Texto para exibir o tempo restante da lanterna
-    public int maxUses = 3; // Número máximo de vezes que a lanterna pode ser usada
+    public int maxUses = 1; // Número máximo de vezes que a lanterna pode ser usada
 
     private GameObject currentFlashlight; // Referência à lanterna instanciada
     private Transform playerTransform; // Referência ao Transform do Player
@@ -19,6 +20,8 @@ public class FlashlightController : MonoBehaviour
     private bool isFlashlightActive; // Estado da lanterna
     private int remainingUses; // Contador de usos restantes
     private bool hasBattery; // Indica se o jogador coletou a pilha
+    private int batteriesCollected = 0; // Número de baterias coletadas
+
 
     void Start()
     {
@@ -168,7 +171,16 @@ public class FlashlightController : MonoBehaviour
 
     public void CollectBattery()
     {
-        hasBattery = true; // O jogador coletou a pilha
+        if (hasBattery) // Se já foi coletada pelo menos uma pilha
+        {
+            remainingDuration += flashlightDuration; // Adiciona o tempo atual da lanterna
+        }
+        else
+        {
+            hasBattery = true; // Marca que o jogador coletou a primeira pilha
+        }
+
+        UpdateTimerText(); // Atualiza o temporizador na UI
     }
 
     public void SetFlashlightOffset(Vector3 newOffset)
