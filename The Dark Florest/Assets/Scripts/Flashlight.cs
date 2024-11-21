@@ -21,42 +21,45 @@ public class FlashlightController : MonoBehaviour
     private int remainingUses; // Contador de usos restantes
     private bool hasBattery; // Indica se o jogador coletou a pilha
     private int batteriesCollected = 0; // Número de baterias coletadas
+    private bool canUseFlashlight; // Indica se o jogador pode usar a lanterna
+
 
 
     void Start()
     {
-        // Busca o objeto do jogador pela tag
+        // Configurações iniciais
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             playerTransform = player.transform;
-            playerAnimator = player.GetComponent<Animator>(); // Obtém o Animator do jogador
+            playerAnimator = player.GetComponent<Animator>();
         }
         else
         {
             Debug.LogError("Player com a tag 'Player' não encontrado na cena.");
         }
 
-        // Inicializa o texto do temporizador
         UpdateTimerText();
-        remainingUses = maxUses; // Inicializa o número de usos
-        hasBattery = false; // Inicializa como não tendo pilha
+        remainingUses = maxUses; 
+        hasBattery = false;
+        canUseFlashlight = false; // Inicialmente, o jogador não pode usar a lanterna
     }
 
     void Update()
     {
-        // Verifica se a tecla X foi pressionada
         if (Input.GetKeyDown(KeyCode.X))
         {
-            if (currentFlashlight == null && remainingUses > 0 && hasBattery) // Verifica se tem pilha
+            if (currentFlashlight == null && remainingUses > 0 && hasBattery && canUseFlashlight)
             {
-                // Instancia a lanterna se não houver uma ativa e ainda houver usos
                 InstantiateFlashlight();
             }
-            else
+            else if (currentFlashlight != null)
             {
-                // Alterna a lanterna
                 ToggleFlashlight();
+            }
+            else if (!hasBattery)
+            {
+                Debug.Log("Você precisa coletar uma bateria para usar a lanterna!");
             }
         }
     }
@@ -75,15 +78,17 @@ public class FlashlightController : MonoBehaviour
         while (remainingDuration > 0)
         {
             yield return new WaitForSeconds(1f);
-            remainingDuration--; // Decrementa a duração restante a cada segundo
-            UpdateTimerText(); // Atualiza o texto do temporizador
+            remainingDuration--; 
+            UpdateTimerText();
         }
 
-        // Destrói a lanterna quando o tempo acabar e desconta uma vida
-        DestroyFlashlight();
-        remainingUses--; // Desconta uma vida ao destruir a lanterna
-    }
+        Debug.Log("O tempo da lanterna acabou. Colete uma nova bateria para usá-la novamente.");
 
+        // Desativa a lanterna e impede seu uso até que outra pilha seja coletada
+        DestroyFlashlight();
+        hasBattery = false; // O jogador perde a bateria
+        canUseFlashlight = false; // Bloqueia o uso da lanterna
+    }
     private void ToggleFlashlight()
     {
         if (isFlashlightActive)
@@ -171,16 +176,14 @@ public class FlashlightController : MonoBehaviour
 
     public void CollectBattery()
     {
-        if (hasBattery) // Se já foi coletada pelo menos uma pilha
-        {
-            remainingDuration += flashlightDuration; // Adiciona o tempo atual da lanterna
-        }
-        else
-        {
-            hasBattery = true; // Marca que o jogador coletou a primeira pilha
-        }
+        hasBattery = true; // Marca que o jogador possui bateria
+        canUseFlashlight = true; // Permite o uso da lanterna novamente
+        remainingDuration = flashlightDuration; // Reseta o tempo da lanterna
 
-        UpdateTimerText(); // Atualiza o temporizador na UI
+        // Atualiza o texto do temporizador
+        UpdateTimerText();
+
+        Debug.Log("Nova bateria coletada! Lanterna pode ser usada novamente.");
     }
 
     public void SetFlashlightOffset(Vector3 newOffset)

@@ -319,26 +319,24 @@ public class Player : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.CompareTag("SpecialAmmo"))
+        if (collider.CompareTag("Checkpoint"))
         {
-            hasSpecialAmmo = true;
-
-            // Soma o limite da munição especial ao contador atual
-            specialAmmoCount += specialAmmoLimit;
-
-            // Atualiza o texto da munição na interface
-            UpdateSpecialAmmoText();
-
-            // Destroi o objeto coletável
-            Destroy(collider.gameObject);
+            CheckpointManager.Instance.lastCheckpointPosition = transform.position; // Salva a posição do checkpoint
+            Debug.Log("Checkpoint alcançado: " + transform.position);
         }
-        else if (collider.CompareTag("Carta")) // Adicionando lógica para destruir a Carta
+
+        // Outros casos de colisão, como a coleta de munição especial ou cartas
+        else if (collider.CompareTag("SpecialAmmo"))
         {
-            Destroy(collider.gameObject); // Destrói a Carta
+            // Código existente para coleta de munição especial
+        }
+        else if (collider.CompareTag("Carta"))
+        {
+            Destroy(collider.gameObject);
         }
         else if (collider.gameObject.CompareTag("Bloco"))
         {
-            TakeDamage(enemyDamage = 1); // Apenas aplica dano sem knockback
+            TakeDamage(1); // Apenas aplica dano
         }
     }
     
@@ -413,11 +411,42 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        if (isDead) return; // Impede que a animação de morte seja executada mais de uma vez
+        if (isDead) return; // Impede que o jogador morra várias vezes
 
-        isDead = true; // Marca o Player como morto
+        isDead = true; // Marca que o jogador está morto
         StartCoroutine(HandleDeath());
+
+        // Espera um pouco antes de reiniciar a cena ou restaurar o checkpoint
     }
+
+    private IEnumerator RestoreCheckpoint()
+    {
+        
+
+        // Restaura a posição do jogador para o último checkpoint
+        transform.position = CheckpointManager.Instance.lastCheckpointPosition;
+
+        // Restaura a vida
+        currentHealth = maxHealth;
+        UpdateHearts();
+
+        // Reseta o estado do jogador
+        isDead = false;
+        Anim.SetInteger("transition", 0);
+        yield return new WaitForSeconds(0.2f); // Duração da animação de morte
+        isDead = false; // Permite que o Player receba dano novamente
+        move = true;
+        rig.isKinematic = false; // Reativa a física do Rigidbody
+        GameController.instance.gameOver.SetActive(false);
+        
+        
+    }
+
+    public void VoltarVida()
+    {
+        StartCoroutine(RestoreCheckpoint());
+    }
+    
 
     private IEnumerator HandleDeath()
     {
@@ -427,13 +456,9 @@ public class Player : MonoBehaviour
         rig.isKinematic = true; // Desativa a física para evitar que o Player seja empurrado
         yield return new WaitForSeconds(2.0f);
 
-        LoadGameOver();
+        GameController.instance.gameOver.SetActive(true);
     }
-
-    private void LoadGameOver()
-    {
-        SceneManager.LoadScene("GameOver");
-    }
+    
 
     private void Respawn()
     {

@@ -39,4 +39,18 @@ public class CheckpointManager : MonoBehaviour
     {
         return lastCheckpointPosition;
     }
+
+    // Função para respawn no último checkpoint salvo
+    public void RespawnPlayer(GameObject player)
+    {
+        if (lastCheckpointPosition != null)
+        {
+            player.transform.position = lastCheckpointPosition;  // Move o jogador para o checkpoint
+            Debug.Log("Jogador respawnado na posição: " + lastCheckpointPosition);
+        }
+        else
+        {
+            Debug.Log("Nenhum checkpoint foi salvo!");
+        }
+    }
 }

@@ -122,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 1
   damage: 1
-  damageRange: 0.12
+  damageRange: 0.2
   knockbackForceVertical: 10
   knockbackForceHorizontal: 10
 --- !u!61 &8849833088161259760

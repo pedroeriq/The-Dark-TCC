@@ -82,8 +82,12 @@ public class Conversa : MonoBehaviour
             startDialogo = false;
             dialogoIndex = 0;
 
+            // Reativa o movimento do Player
             var player = FindObjectOfType<Player>();
-            player.SetMove(true);
+            if (player != null)
+            {
+                player.SetMove(true);
+            }
         }
     }
 
@@ -95,6 +99,14 @@ public class Conversa : MonoBehaviour
         StartCoroutine(AnimarPainel()); // Inicia a animação de transição do painel
         MostrarElementosPlayer();
         StartCoroutine(MostrarDialogo());
+
+        // Desativa o movimento do Player
+        var player = FindObjectOfType<Player>();
+        if (player != null)
+        {
+            player.Anim.SetInteger("transition", 0);
+            player.SetMove(false); // Método para desativar o movimento
+        }
     }
 
     IEnumerator AnimarPainel()
@@ -191,4 +203,5 @@ public class Conversa : MonoBehaviour
             startDialogo = false;
         }
     }
+    
 }

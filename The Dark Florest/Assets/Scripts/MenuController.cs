@@ -34,4 +34,18 @@ public class MenuController : MonoBehaviour
         Application.Quit(); // Sai do jogo
         Debug.Log("Saindo do jogo...");
     }
+
+    // Função chamada quando o jogador morre, que carrega a tela de Game Over
+    public void GameOver()
+    {
+        SceneManager.LoadScene("GameOver"); // Coloque o nome da cena de Game Over
+    }
+
+    // Função chamada quando o jogador clica no botão "Continuar" no Game Over
+    public void ContinueGame()
+    {
+        // Aqui chamamos o respawn do jogador no checkpoint salvo
+        CheckpointManager.Instance.RespawnPlayer(GameObject.FindWithTag("Player"));
+        // Volta para a cena do jogo
+    }
 }

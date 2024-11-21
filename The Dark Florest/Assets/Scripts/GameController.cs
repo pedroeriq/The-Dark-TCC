@@ -3,6 +3,7 @@ using TMPro;
 
 public class GameController : MonoBehaviour
 {
+    public GameObject gameOver;
     public PauseMenu pauseMenu; // Arraste o script PauseMenu aqui no Inspector
     public static GameController instance; // Singleton instance
     public TMP_Text moedaTXT; // Texto para mostrar as moedas na tela

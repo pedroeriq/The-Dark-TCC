@@ -9,10 +9,13 @@ public class Mensagem1 : MonoBehaviour
     public Sprite imagem;               // Imagem que será exibida
     private bool mensagemExibida = false; // Para controlar se a mensagem já foi exibida
 
+    private Player player;  // Referência ao script do Player
+
     // Start é chamado antes do primeiro frame
     void Start()
     {
         painelMensagem.SetActive(false);  // Inicializa o painel como invisível
+        player = FindObjectOfType<Player>();  // Obtém a referência do Player
     }
 
     // Método chamado quando o Player colide com o objeto
@@ -22,6 +25,13 @@ public class Mensagem1 : MonoBehaviour
         {
             // Exibe a imagem e o painel
             ExibirImagem();
+
+            // Desativa o movimento do Player
+            if (player != null)
+            {
+                player.Anim.SetInteger("transition", 0);
+                player.SetMove(false);  // Método para desativar o movimento
+            }
         }
     }
 
@@ -39,6 +49,12 @@ public class Mensagem1 : MonoBehaviour
         if (mensagemExibida && Input.GetKeyDown(KeyCode.Escape))  // Verifica se o Esc foi pressionado
         {
             OcultarMensagem();  // Oculta a mensagem quando o jogador apertar Esc
+
+            // Reativa o movimento do Player
+            if (player != null)
+            {
+                player.SetMove(true);  // Método para reativar o movimento
+            }
         }
     }
 

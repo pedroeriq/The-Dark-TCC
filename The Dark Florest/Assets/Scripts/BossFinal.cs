@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; // Para atualizar a barra de vida na UI
@@ -153,6 +154,14 @@ public class BossFinal : MonoBehaviour
 
         Debug.Log($"Boss Final recebeu {dano} de dano. Vida restante: {vida}");
 
+        // Verifica se a vida está na metade para aumentar a dificuldade
+        if (vida <= vidaSlider.maxValue / 2 && vida > 0)
+        {
+            chaseSpeed = originalSpeed * 1.5f; // Aumenta a velocidade em 50%
+            attackInterval = attackInterval / 2; // Reduz o intervalo de ataques pela metade
+            Debug.Log("Boss está mais rápido e atacando com mais frequência!");
+        }
+
         // Verifica se o Boss morreu
         if (vida <= 0)
         {
@@ -177,7 +186,6 @@ public class BossFinal : MonoBehaviour
         animator.SetTrigger("Dead");
 
         // Destrói o Boss após a animação de morte
-        Destroy(gameObject, 2f); // Aguarda 3 segundos antes de destruir o Boss
     }
 
     // Lógica de colisão com balas
@@ -193,5 +201,19 @@ public class BossFinal : MonoBehaviour
             ReceberDano(danoEspecial);
             Destroy(collision.gameObject);
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Bala"))
+            {
+                ReceberDano(danoNormal);
+                Destroy(other.gameObject);
+            }
+            else if (other.gameObject.CompareTag("SpecialAmmo"))
+            {
+                ReceberDano(danoEspecial);
+                Destroy(other.gameObject);
+            }
     }
 }
