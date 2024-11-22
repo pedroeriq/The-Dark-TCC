@@ -22,6 +22,7 @@ TagManager:
   - Plataforma
   - ResetPatrol
   - SpecialFirePoint
+  - BossFinal
   layers:
   - Default
   - TransparentFX

@@ -12,16 +12,7 @@ public class MenuController : MonoBehaviour
 
     public void StartGame()
     {
-        // Verifica se é a primeira vez jogando
-        if (PlayerPrefs.GetInt(FirstPlayKey, 1) == 1) // O valor padrão é 1 (primeira vez)
-        {
-            SceneManager.LoadScene("Introdução"); // Carrega a cena de introdução
-            PlayerPrefs.SetInt(FirstPlayKey, 0);  // Define que o jogo já foi iniciado
-        }
-        else
-        {
-            SceneManager.LoadScene("FINAL"); // Carrega diretamente a cena do jogo
-        }
+        SceneManager.LoadScene("Introdução"); // Carrega a cena de introdução
     }
 
     public void OpenOptions()

@@ -27,12 +27,18 @@ public class SombraErrante : MonoBehaviour
 
     public Transform pontoAtaque;  // Referência ao GameObject do ponto de ataque
 
+    // Adicionando variáveis para som
+    public AudioClip somAparicao;  // Som a ser tocado quando a sombra aparecer
+    private AudioSource audioSource;  // Referência ao AudioSource
+
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();  // Inicializa o Animator
         spriteRenderer.enabled = false;  // Sombra começa invisível
         velocidadeOriginal = speed;  // Armazena a velocidade original
+
+        audioSource = GetComponent<AudioSource>();  // Obtém a referência do AudioSource
     }
 
     void Update()
@@ -67,6 +73,12 @@ public class SombraErrante : MonoBehaviour
 
         // Chama a animação de surgimento (transition 2)
         animator.SetInteger("transition", 2);
+
+        // Toca o som de aparição da sombra
+        if (somAparicao != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(somAparicao);
+        }
 
         // Espera a animação de surgimento terminar antes de seguir o player
         StartCoroutine(EsperarAnimacaoSurgimento());
@@ -150,6 +162,10 @@ public class SombraErrante : MonoBehaviour
         {
             ReceberDano(danoEspecial);
             Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Espinho"))
+        {
+            ReceberDano(10); // Apenas aplica dano sem knockback
         }
     }
 

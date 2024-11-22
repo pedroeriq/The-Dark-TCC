@@ -56,13 +56,20 @@ public class Player : MonoBehaviour
         Anim = GetComponent<Animator>();
         UpdateHearts();
         CheckpointManager.Instance.lastCheckpointPosition = transform.position;
-        UpdateSpecialAmmoText();
-        CheckGround(); // Certifique-se de que o estado do chão seja verificado
+        UpdateSpecialAmmoText(); 
     }
 
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.V) && specialAmmoCount > 0 && !isAttacking)
+        {
+            if (audioTiro != null)
+            {
+                audioTiro.Play();
+            }
+            StartCoroutine(PerformSpecialAttack());
+        }
         if (move && !isAttacking)
         {
             Move();
@@ -184,7 +191,6 @@ public class Player : MonoBehaviour
             StartCoroutine(PerformMeleeAttack());
         }
     }
-
 // Coroutine para realizar o ataque corpo a corpo com delay e cooldown
     IEnumerator PerformMeleeAttack()
     {
@@ -254,35 +260,36 @@ public class Player : MonoBehaviour
     // Coroutine para realizar o ataque especial com delay e cooldown
     IEnumerator PerformSpecialAttack()
     {
+        if (specialAmmoCount <= 0 || isAttacking)
+        {
+            yield break; // Se não tiver munição ou já estiver atacando, não faz nada
+        }
+
+        isAttacking = true;
         move = false;
         rig.velocity = Vector2.zero;
-        isAttacking = true;
-        canAttack = false;
-        Anim.SetTrigger("Shot Especial"); // Animação de ataque especial
+        Anim.SetTrigger("Shot Especial"); // Chama a animação do tiro especial
 
-        yield return new WaitForSeconds(0.2f); // Delay para sincronizar com a animação
+        yield return new WaitForSeconds(0.2f); // Sincroniza com a animação
 
-        SpecialFireBullet(specialBulletPrefab); // Dispara o ataque especial
+        // Instancia a bala especial
+        SpecialFireBullet(specialBulletPrefab); 
 
-        // Diminui a munição apenas se houver munição
-        if (specialAmmoCount > 0)
-        {
-            specialAmmoCount--; // Reduz a contagem de munição especial
-            UpdateSpecialAmmoText(); // Atualiza o texto na tela
-        }
+        // Diminui a quantidade de munição
+        specialAmmoCount--; 
+        UpdateSpecialAmmoText(); // Atualiza a UI
 
         if (specialAmmoCount <= 0)
         {
-            hasSpecialAmmo = false; // Acabou a munição especial
+            hasSpecialAmmo = false; // Se a munição acabou
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f); // Tempo de cooldown do ataque
 
         isAttacking = false;
         move = true;
-
-        yield return new WaitForSeconds(attackCooldown);
-        canAttack = true; // Libera novos ataques
+        yield return new WaitForSeconds(attackCooldown); // Cooldown entre ataques
+        canAttack = true; // Permite atacar novamente
     }
     void UpdateSpecialAmmoText()
     {
@@ -335,7 +342,14 @@ public class Player : MonoBehaviour
         // Outros casos de colisão, como a coleta de munição especial ou cartas
         else if (collider.CompareTag("SpecialAmmo"))
         {
-            // Código existente para coleta de munição especial
+            // Aumenta a quantidade de munição especial sem limite
+            specialAmmoCount += 5; // Soma 5 à munição atual
+
+            // Atualiza o texto na tela para mostrar a nova quantidade
+            UpdateSpecialAmmoText();
+
+            // Destroi o item de munição especial coletado
+            Destroy(collider.gameObject);
         }
         else if (collider.CompareTag("Carta"))
         {
@@ -443,7 +457,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.2f); // Duração da animação de morte
         isDead = false; // Permite que o Player receba dano novamente
         move = true;
-        isJumping = true;
+        rig.isKinematic = false; // Reativa a física do Rigidbody
         GameController.instance.gameOver.SetActive(false);
         
         
@@ -460,28 +474,18 @@ public class Player : MonoBehaviour
         Anim.SetTrigger("Dead");
         move = false;
         rig.velocity = Vector2.zero; // Para o movimento do Rigidbody
-        rig.mass = 100;
-        rig.gravityScale = 5; // Garante que a gravidade esteja ativa
+        rig.isKinematic = true; // Desativa a física para evitar que o Player seja empurrado
         yield return new WaitForSeconds(1.0f);
         
-        // Verifica se o jogador está enfrentando o boss final
         if (SceneManager.GetActiveScene().name == "FINALBOSS")
         {
             StartCoroutine(ReloadBossScene());
         }
         else
         {
-            // Verificar se a referência do gameOver é válida
-            if (GameController.instance.gameOver != null)
-            {
-                GameController.instance.gameOver.SetActive(true);
-            }
-            else
-            {
-                Debug.LogWarning("GameOver não foi encontrado!");
-            }
+            // Caso contrário, carrega a tela de game over
+            StartCoroutine(GameOver());
         }
-
         
     }
     private IEnumerator ReloadBossScene()
@@ -489,6 +493,21 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1f); // Aguarda a duração da animação de morte ou outro tempo desejado
         SceneManager.LoadScene("FINALBOSS"); // Recarrega a cena do boss final
     }
+    // Coroutine para exibir a tela de game over
+    private IEnumerator GameOver()
+    {
+        yield return new WaitForSeconds(1f); // Aguarda a duração da animação de morte ou outro tempo desejado
+        // Verificar se a referência do gameOver é válida
+        if (GameController.instance.gameOver != null)
+        {
+            GameController.instance.gameOver.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("GameOver não foi encontrado!");
+        }
+    }
+
     
 
     private void Respawn()

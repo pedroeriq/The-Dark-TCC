@@ -41,7 +41,17 @@ public class Enemy2 : MonoBehaviour
         target = pointA;
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>(); // Obtenha a referência ao Rigidbody2D
+    
+        // Define o alcance máximo para os sons
+        float soundRange = detectionRange + 1f; // Um pouco maior que o alcance de detecção
+        Musica.maxDistance = soundRange;
+        Grito.maxDistance = soundRange;
+
+        // Garante que o modo seja 3D para limitar a distância
+        Musica.spatialBlend = 1f; // 1 = som 3D
+        Grito.spatialBlend = 1f;
     }
+
 
     void Update()
     {
