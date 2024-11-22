@@ -1,17 +1,19 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; // Para atualizar a barra de vida na UI
 
 public class BossFinal : MonoBehaviour
 {
+    
     public Transform player; // Referência ao jogador
     public float chaseSpeed = 4f; // Velocidade ao perseguir o jogador
     public float detectionRange = 5f; // Distância de detecção do jogador
 
     public GameObject attackObjectPrefab; // Prefab do objeto de ataque
+    public GameObject circleAttackPrefab; // Prefab do CircleAttack
     public float attackInterval = 3f; // Intervalo entre ataques
     public float attackDelay = 1f; // Tempo entre o início da animação e o aparecimento do ataque
+    public float circleAttackInterval = 5f; // Intervalo entre os CircleAttacks
 
     private Animator animator; // Referência ao Animator
     private bool isFlipped = false; // O Boss começa flipado para a direita
@@ -29,7 +31,7 @@ public class BossFinal : MonoBehaviour
     // Variável para controlar se o Boss está morto
     private bool isDead = false;
 
-    void Start()
+    private void Start()
     {
         animator = GetComponent<Animator>();
 
@@ -38,6 +40,9 @@ public class BossFinal : MonoBehaviour
         {
             Flip();
         }
+
+        // Ignorar colisão com o Player
+        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), player.GetComponent<Collider2D>());
 
         // Armazena a velocidade original do Boss
         originalSpeed = chaseSpeed;
@@ -51,7 +56,8 @@ public class BossFinal : MonoBehaviour
         }
     }
 
-    void Update()
+
+    private void Update()
     {
         if (isDead)
             return; // Se o Boss estiver morto, ele não faz mais nada
@@ -132,13 +138,33 @@ public class BossFinal : MonoBehaviour
                 Instantiate(attackObjectPrefab, spawnPosition, Quaternion.identity);
             }
 
+            // Instancia um CircleAttack a cada `circleAttackInterval` segundos
+            SpawnCircleAttack();
+
             // Retorna a velocidade ao normal após o ataque
             chaseSpeed = originalSpeed;
         }
     }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (isDead)
+            return; // Se o Boss já está morto, ignora qualquer colisão
 
-    // Lógica de dano ao Boss (semelhante ao Inimigo2)
-    public void ReceberDano(int dano)
+        // Verifica se colidiu com a tag "Bala"
+        if (collision.gameObject.CompareTag("Bala"))
+        {
+            TomarDano(danoNormal); // Aplica o dano normal
+            Destroy(collision.gameObject); // Destroi o objeto da bala
+        }
+        // Verifica se colidiu com a tag "SpecialAmmo"
+        else if (collision.gameObject.CompareTag("SpecialAmmo"))
+        {
+            TomarDano(danoEspecial); // Aplica o dano especial
+            Destroy(collision.gameObject); // Destroi o objeto da bala especial
+        }
+    }
+
+    private void TomarDano(int dano)
     {
         if (isDead)
             return; // Se o Boss estiver morto, não faz nada
@@ -165,7 +191,7 @@ public class BossFinal : MonoBehaviour
         // Verifica se o Boss morreu
         if (vida <= 0)
         {
-            Die();
+            Morrer();
         }
         else
         {
@@ -174,7 +200,7 @@ public class BossFinal : MonoBehaviour
         }
     }
 
-    private void Die()
+    private void Morrer()
     {
         // Marca o Boss como morto
         isDead = true;
@@ -188,32 +214,36 @@ public class BossFinal : MonoBehaviour
         // Destrói o Boss após a animação de morte
     }
 
-    // Lógica de colisão com balas
-    private void OnCollisionEnter2D(Collision2D collision)
+    
+
+    private void SpawnCircleAttack()
     {
-        if (collision.gameObject.CompareTag("Bala"))
+        if (circleAttackPrefab != null && player != null)
         {
-            ReceberDano(danoNormal);
-            Destroy(collision.gameObject);
+            int numberOfAttacks = 2; // Número de CircleAttacks a serem instanciados
+            float spawnRadius = 3f; // Raio ao redor do Boss para spawnar os ataques
+
+            for (int i = 0; i < numberOfAttacks; i++)
+            {
+                // Gera uma posição aleatória dentro do raio definido
+                Vector3 randomOffset = Random.insideUnitCircle * spawnRadius;
+                Vector3 spawnPosition = transform.position + randomOffset;
+
+                // Calcula a direção do jogador
+                Vector3 directionToPlayer = (player.position - spawnPosition).normalized;
+
+                // Instancia o CircleAttack
+                GameObject circleAttack = Instantiate(circleAttackPrefab, spawnPosition, Quaternion.identity);
+
+                // Passa a direção para o script do CircleAttack
+                CircleAttack circleAttackScript = circleAttack.GetComponent<CircleAttack>();
+                if (circleAttackScript != null)
+                {
+                    circleAttackScript.SetDirection(directionToPlayer);
+                }
+            }
         }
-        else if (collision.gameObject.CompareTag("SpecialAmmo"))
-        {
-            ReceberDano(danoEspecial);
-            Destroy(collision.gameObject);
-        }
+        
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Bala"))
-            {
-                ReceberDano(danoNormal);
-                Destroy(other.gameObject);
-            }
-            else if (other.gameObject.CompareTag("SpecialAmmo"))
-            {
-                ReceberDano(danoEspecial);
-                Destroy(other.gameObject);
-            }
-    }
 }

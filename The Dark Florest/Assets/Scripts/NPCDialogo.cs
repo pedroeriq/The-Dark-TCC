@@ -17,6 +17,7 @@ public class Conversa : MonoBehaviour
 
     public Text dialogoTextNPC;
     public Text nameNPC;
+    public string NamedoNPC;
 
     public bool startDialogo;
     private bool isPlayerTurn = true;
@@ -175,7 +176,7 @@ public class Conversa : MonoBehaviour
 
     void MostrarElementosNPC()
     {
-        nameNPC.text = "Yan"; // Nome do NPC
+        nameNPC.text = NamedoNPC;
         nameNPC.gameObject.SetActive(true);
         dialogoTextNPC.text = "";
         dialogoTextPlayer.text = "";

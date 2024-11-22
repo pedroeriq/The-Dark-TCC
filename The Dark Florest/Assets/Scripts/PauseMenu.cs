@@ -44,7 +44,8 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        GameController.instance.ResumeGame(); // Chama a função ResumeGame do GameController
+        Time.timeScale = 1f; // Restaura o tempo
+        pauseMenuUI.SetActive(false); // Desativa o menu de pausa
     }
 
     public void ExitGame()

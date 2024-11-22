@@ -456,8 +456,17 @@ public class Player : MonoBehaviour
         rig.isKinematic = true; // Desativa a física para evitar que o Player seja empurrado
         yield return new WaitForSeconds(2.0f);
 
-        GameController.instance.gameOver.SetActive(true);
+        // Verificar se a referência do gameOver é válida
+        if (GameController.instance.gameOver != null)
+        {
+            GameController.instance.gameOver.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("GameOver não foi encontrado!");
+        }
     }
+
     
 
     private void Respawn()

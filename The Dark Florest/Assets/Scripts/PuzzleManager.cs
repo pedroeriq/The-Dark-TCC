@@ -9,6 +9,8 @@ public class PuzzleManager : MonoBehaviour
     public SpriteRenderer doorSpriteRenderer; // Referência ao SpriteRenderer da porta
     public Sprite doorOpen;   // Sprite da porta aberta
     public Sprite doorClosed; // Sprite da porta fechada
+    public bool isDoorOpen = false; // Indica se a porta está aberta
+
 
     // Padrão correto: por exemplo, Vermelho (0), Verde (1), Azul (2), Amarelo (3)
     public int[] correctPattern = { 0, 1, 2, 3 };
@@ -41,10 +43,12 @@ public class PuzzleManager : MonoBehaviour
         {
             Debug.Log("Parabéns! Você acertou o padrão e a porta abriu.");
             doorSpriteRenderer.sprite = doorOpen; // Abre a porta
+            isDoorOpen = true; // Define como aberta
         }
         else
         {
             doorSpriteRenderer.sprite = doorClosed; // Mantém a porta fechada
+            isDoorOpen = false; // Define como fechada
         }
     }
 }

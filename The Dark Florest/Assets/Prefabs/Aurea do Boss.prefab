@@ -120,9 +120,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbfd75cf898f73b4eaf132ac22a159bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 1
+  lifetime: 3
   damage: 1
-  damageRange: 0.2
+  damageRange: 0.14
   knockbackForceVertical: 10
   knockbackForceHorizontal: 10
 --- !u!61 &8849833088161259760
