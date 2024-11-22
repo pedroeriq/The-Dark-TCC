@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI; // Para atualizar a barra de vida na UI
+using UnityEngine.SceneManagement;
 
 public class BossFinal : MonoBehaviour
 {
@@ -118,33 +119,46 @@ public class BossFinal : MonoBehaviour
 
     private IEnumerator AttackRoutine()
     {
-        while (isChasingPlayer && !isDead)
+        // Verifica se o Boss está morto antes de iniciar a corrotina de ataque
+        if (isDead)
+            yield break;
+
+        while (!isDead)
         {
-            yield return new WaitForSeconds(attackInterval); // Espera até o próximo ataque
+            // Verifica se o Boss morreu durante a execução da corrotina
+            if (isDead)
+                yield break;
 
-            // Desacelera o movimento durante o ataque
-            chaseSpeed = 0f; // O Boss para de se mover
+            // Espera o tempo entre os ataques
+            yield return new WaitForSeconds(attackInterval);
 
-            // Inicia a animação de ataque
+            // Ativa a animação de ataque
             animator.SetTrigger("Attack");
 
-            // Aguarda o delay antes de instanciar o objeto de ataque
+            // Espera o tempo de delay da animação
             yield return new WaitForSeconds(attackDelay);
 
-            // Cria o objeto de ataque na posição do jogador
+            // Instancia o ataque
             if (attackObjectPrefab != null && player != null)
             {
                 Vector3 spawnPosition = new Vector3(player.position.x, player.position.y, 0);
                 Instantiate(attackObjectPrefab, spawnPosition, Quaternion.identity);
             }
 
-            // Instancia um CircleAttack a cada `circleAttackInterval` segundos
+            // Instancia um ataque circular
             SpawnCircleAttack();
-
-            // Retorna a velocidade ao normal após o ataque
-            chaseSpeed = originalSpeed;
         }
     }
+    private void StopAttack()
+    {
+        // Evita que o Boss execute qualquer tipo de ataque após morrer
+        attackRoutine = null;
+        // Caso esteja em alguma animação de ataque, vamos forçar o reset.
+        animator.ResetTrigger("Attack");
+        // Se houver corrotinas de ataque, todas serão interrompidas
+        StopCoroutine("AttackRoutine");
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (isDead)
@@ -164,7 +178,7 @@ public class BossFinal : MonoBehaviour
         }
     }
 
-    private void TomarDano(int dano)
+    public void TomarDano(int dano)
     {
         if (isDead)
             return; // Se o Boss estiver morto, não faz nada
@@ -195,23 +209,45 @@ public class BossFinal : MonoBehaviour
         }
         else
         {
-            animator.SetTrigger("Hit"); // Animação de dano
-            chaseSpeed = 0f; // Zera a velocidade ao ser atingido
+            animator.SetTrigger("Hit");
+            chaseSpeed = 0f; // O Boss para de se mover
+            StartCoroutine(VoltarAoNormal(0.5f)); // Aguarda 1 segundo antes de voltar a perseguir
         }
     }
+    private IEnumerator VoltarAoNormal(float tempo)
+    {
+        yield return new WaitForSeconds(tempo);
+        chaseSpeed = originalSpeed; // Restaura a velocidade original
+    }
 
-    private void Morrer()
+    public void Morrer()
     {
         // Marca o Boss como morto
         isDead = true;
 
-        // Zera a velocidade
-        chaseSpeed = 0f;
-
         // Animação de morte
         animator.SetTrigger("Dead");
 
-        // Destrói o Boss após a animação de morte
+        // Desabilita qualquer interação com o Boss
+        chaseSpeed = 0f;
+
+        // Interrompe todas as corrotinas relacionadas a ataques
+        StopAllCoroutines();
+
+        // Desabilita as funcionalidades de ataque
+        StopAttack();
+
+        // Aguarda 5 segundos e depois reinicia a cena
+        StartCoroutine(AguardarMorteECargarCena());
+    }
+
+    private IEnumerator AguardarMorteECargarCena()
+    {
+        // Espera 5 segundos enquanto a animação de morte acontece
+        yield return new WaitForSeconds(8f);
+
+        // Carrega a cena final (substitua "CenaFinal" pelo nome real da sua cena final)
+        SceneManager.LoadScene("CenaFinal");
     }
 
     

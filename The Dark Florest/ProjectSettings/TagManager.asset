@@ -21,6 +21,7 @@ TagManager:
   - Espinho
   - Plataforma
   - ResetPatrol
+  - SpecialFirePoint
   layers:
   - Default
   - TransparentFX

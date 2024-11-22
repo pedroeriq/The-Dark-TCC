@@ -56,7 +56,8 @@ public class Player : MonoBehaviour
         Anim = GetComponent<Animator>();
         UpdateHearts();
         CheckpointManager.Instance.lastCheckpointPosition = transform.position;
-        UpdateSpecialAmmoText(); 
+        UpdateSpecialAmmoText();
+        CheckGround(); // Certifique-se de que o estado do chão seja verificado
     }
 
 
@@ -172,6 +173,12 @@ public class Player : MonoBehaviour
     // Novo método para o ataque corpo a corpo
     void MeleeAttack()
     {
+        // Verifica se a cena atual é a "FINALBOOS"
+        if (SceneManager.GetActiveScene().name == "FINALBOSS") 
+        {
+            return; // Sai do método sem executar o ataque
+        }
+
         if (canAttack && Input.GetKeyDown(KeyCode.C)) // Ataque corpo a corpo com a tecla C
         {
             StartCoroutine(PerformMeleeAttack());
@@ -436,7 +443,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(0.2f); // Duração da animação de morte
         isDead = false; // Permite que o Player receba dano novamente
         move = true;
-        rig.isKinematic = false; // Reativa a física do Rigidbody
+        isJumping = true;
         GameController.instance.gameOver.SetActive(false);
         
         
@@ -453,20 +460,35 @@ public class Player : MonoBehaviour
         Anim.SetTrigger("Dead");
         move = false;
         rig.velocity = Vector2.zero; // Para o movimento do Rigidbody
-        rig.isKinematic = true; // Desativa a física para evitar que o Player seja empurrado
-        yield return new WaitForSeconds(2.0f);
-
-        // Verificar se a referência do gameOver é válida
-        if (GameController.instance.gameOver != null)
+        rig.mass = 100;
+        rig.gravityScale = 5; // Garante que a gravidade esteja ativa
+        yield return new WaitForSeconds(1.0f);
+        
+        // Verifica se o jogador está enfrentando o boss final
+        if (SceneManager.GetActiveScene().name == "FINALBOSS")
         {
-            GameController.instance.gameOver.SetActive(true);
+            StartCoroutine(ReloadBossScene());
         }
         else
         {
-            Debug.LogWarning("GameOver não foi encontrado!");
+            // Verificar se a referência do gameOver é válida
+            if (GameController.instance.gameOver != null)
+            {
+                GameController.instance.gameOver.SetActive(true);
+            }
+            else
+            {
+                Debug.LogWarning("GameOver não foi encontrado!");
+            }
         }
-    }
 
+        
+    }
+    private IEnumerator ReloadBossScene()
+    {
+        yield return new WaitForSeconds(1f); // Aguarda a duração da animação de morte ou outro tempo desejado
+        SceneManager.LoadScene("FINALBOSS"); // Recarrega a cena do boss final
+    }
     
 
     private void Respawn()
