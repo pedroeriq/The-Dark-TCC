@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class BossFinal : MonoBehaviour
 {
-    
+    public AudioSource backgroundMusic; // Referência ao AudioSource que controla o som de fundo
+    public GameObject[] objectsToDeactivate; // Lista de GameObjects a serem desativados
     public Transform player; // Referência ao jogador
     public float chaseSpeed = 4f; // Velocidade ao perseguir o jogador
     public float detectionRange = 5f; // Distância de detecção do jogador
@@ -28,6 +29,7 @@ public class BossFinal : MonoBehaviour
     public int danoNormal = 1; // Dano causado por bala normal
     public int danoEspecial = 2; // Dano causado por bala especial
     public Slider vidaSlider; // Referência ao Slider da UI para barra de vida
+    public GameObject videoPanel; // Painel onde o VideoPlayer está localizado
 
     // Variável para controlar se o Boss está morto
     private bool isDead = false;
@@ -246,8 +248,19 @@ public class BossFinal : MonoBehaviour
         // Espera 5 segundos enquanto a animação de morte acontece
         yield return new WaitForSeconds(8f);
 
-        // Carrega a cena final (substitua "CenaFinal" pelo nome real da sua cena final)
-        SceneManager.LoadScene("CenaFinal");
+        if (videoPanel != null)
+        {
+            videoPanel.SetActive(true); // Ativa o painel do vídeo
+            
+            // Desativa os objetos
+            DesativarObjetos();
+
+            // Desativa o som de fundo
+            if (backgroundMusic != null)
+            {
+                backgroundMusic.mute = true; // Muda o som para mudo
+            }
+        }
     }
 
     
@@ -280,6 +293,14 @@ public class BossFinal : MonoBehaviour
             }
         }
         
+    }
+    private void DesativarObjetos()
+    {
+        // Desativa todos os objetos especificados
+        foreach (GameObject obj in objectsToDeactivate)
+        {
+            obj.SetActive(false);
+        }
     }
 
 }

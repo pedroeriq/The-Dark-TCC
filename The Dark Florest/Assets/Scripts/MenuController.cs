@@ -1,42 +1,60 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // Necessário para gerenciar cenas
+using UnityEngine.SceneManagement;
+using UnityEngine.UI; // Necessário para manipular os botões
 
 public class MenuController : MonoBehaviour
 {
-    private const string FirstPlayKey = "FirstPlay"; // Chave para identificar se é a primeira vez jogando
-
-    public void MenuScene()
-    {
-        SceneManager.LoadScene("Menu"); // Coloque o nome da cena do seu menu
-    }
+    public GameObject videoPanel; // Painel onde o VideoPlayer está localizado
+    public Button[] menuButtons; // Array para armazenar os botões do menu (Opções, Sair, etc.)
 
     public void StartGame()
     {
-        SceneManager.LoadScene("Introdução"); // Carrega a cena de introdução
+        if (videoPanel != null)
+        {
+            videoPanel.SetActive(true); // Ativa o painel do vídeo
+            DisableMenuButtons(); // Desativa os botões do menu
+        }
+    }
+
+    public void MenuScene()
+    {
+        SceneManager.LoadScene("Menu");
     }
 
     public void OpenOptions()
     {
-        SceneManager.LoadScene("Opções"); // Carrega a cena de opções
+        SceneManager.LoadScene("Opções");
     }
 
     public void ExitGame()
     {
-        Application.Quit(); // Sai do jogo
+        Application.Quit();
         Debug.Log("Saindo do jogo...");
     }
 
-    // Função chamada quando o jogador morre, que carrega a tela de Game Over
     public void GameOver()
     {
-        SceneManager.LoadScene("GameOver"); // Coloque o nome da cena de Game Over
+        SceneManager.LoadScene("GameOver");
     }
 
-    // Função chamada quando o jogador clica no botão "Continuar" no Game Over
     public void ContinueGame()
     {
-        // Aqui chamamos o respawn do jogador no checkpoint salvo
         CheckpointManager.Instance.RespawnPlayer(GameObject.FindWithTag("Player"));
-        // Volta para a cena do jogo
+    }
+
+    private void DisableMenuButtons()
+    {
+        foreach (Button button in menuButtons)
+        {
+            button.interactable = false; // Desativa a interação com os botões
+        }
+    }
+
+    private void EnableMenuButtons()
+    {
+        foreach (Button button in menuButtons)
+        {
+            button.interactable = true; // Reativa os botões, se necessário no futuro
+        }
     }
 }
