@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    public int totalCartas; // Total de cartas no jogo
+    private int cartasColetadas = 0; // Contador de cartas coletadas
     public GameObject gameOver; // Referência para o GameOver
     public PauseMenu pauseMenu; 
     public static GameController instance;
@@ -99,5 +101,14 @@ public class GameController : MonoBehaviour
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    public void ColetarCarta()
+    {
+        cartasColetadas++;
+    }
+
+    public bool TodasCartasColetadas()
+    {
+        return cartasColetadas >= totalCartas;
     }
 }

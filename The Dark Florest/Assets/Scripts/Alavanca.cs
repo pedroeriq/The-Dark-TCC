@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class LeverControl : MonoBehaviour
 {
@@ -8,11 +7,7 @@ public class LeverControl : MonoBehaviour
     public Sprite Cima1Lever;  // Sprite da alavanca na cor verde
     public Sprite DireitoLever;   // Sprite da alavanca na cor azul
     public Sprite EsquerdoLever; // Sprite da alavanca na cor amarela
-
-    public int GetLeverState()
-    {
-        return leverState; // Retorna o estado atual da alavanca
-    }
+    public GameObject painelAviso; // Referência ao painel de aviso
 
     private SpriteRenderer spriteRenderer;
     private bool isNearLever = false; // Verifica se o player está perto da alavanca
@@ -22,13 +17,25 @@ public class LeverControl : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = CimaLever; // Alavanca começa vermelha
+
+        if (painelAviso != null)
+        {
+            painelAviso.SetActive(false); // Inicialmente o painel de aviso está oculto
+        }
     }
 
     void Update()
     {
-        if (isNearLever && Input.GetKeyDown(KeyCode.E)) // Detecta seta para baixo
+        if (isNearLever && Input.GetKeyDown(KeyCode.E)) // Detecta o pressionamento da tecla E
         {
-            ToggleLever(); // Alterna o estado da alavanca
+            if (GameController.instance.TodasCartasColetadas())
+            {
+                ToggleLever(); // Alterna o estado da alavanca
+            }
+            else
+            {
+                StartCoroutine(MostrarPainelAviso()); // Exibe o painel de aviso
+            }
         }
     }
 
@@ -57,6 +64,12 @@ public class LeverControl : MonoBehaviour
         }
     }
 
+    // Método que retorna o estado atual da alavanca
+    public int GetLeverState()
+    {
+        return leverState;
+    }
+
     // Detecta se o player entrou na área de colisão da alavanca
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -72,6 +85,17 @@ public class LeverControl : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isNearLever = false;
+        }
+    }
+
+    // Exibe o painel de aviso por 3 segundos
+    private IEnumerator MostrarPainelAviso()
+    {
+        if (painelAviso != null)
+        {
+            painelAviso.SetActive(true); // Ativa o painel de aviso
+            yield return new WaitForSeconds(6f); // Espera por 3 segundos
+            painelAviso.SetActive(false); // Desativa o painel de aviso
         }
     }
 }

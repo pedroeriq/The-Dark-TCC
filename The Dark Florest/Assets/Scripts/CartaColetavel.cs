@@ -39,6 +39,9 @@ public class CartaColetavel : MonoBehaviour
                 pauseMenu.EnableCartaSprite(cartaIndex);
             }
 
+            // Atualiza o GameController
+            GameController.instance.ColetarCarta();
+
             // Para o som e destrói o objeto
             if (audioSource != null)
             {
