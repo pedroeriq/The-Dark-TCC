@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI; // Necessário para manipular os botões
@@ -6,6 +7,11 @@ public class MenuController : MonoBehaviour
 {
     public GameObject videoPanel; // Painel onde o VideoPlayer está localizado
     public Button[] menuButtons; // Array para armazenar os botões do menu (Opções, Sair, etc.)
+
+    private void Start()
+    {
+        Cursor.visible = true;
+    }
 
     public void StartGame()
     {

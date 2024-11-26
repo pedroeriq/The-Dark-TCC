@@ -199,8 +199,8 @@ public class BossFinal : MonoBehaviour
         // Verifica se a vida está na metade para aumentar a dificuldade
         if (vida <= vidaSlider.maxValue / 2 && vida > 0)
         {
-            chaseSpeed = originalSpeed * 1.5f; // Aumenta a velocidade em 50%
-            attackInterval = attackInterval / 2; // Reduz o intervalo de ataques pela metade
+            chaseSpeed = originalSpeed * 5f; // Aumenta a velocidade em 50%
+            attackInterval = attackInterval / 1; // Reduz o intervalo de ataques pela metade
             Debug.Log("Boss está mais rápido e atacando com mais frequência!");
         }
 
@@ -270,7 +270,7 @@ public class BossFinal : MonoBehaviour
         if (circleAttackPrefab != null && player != null)
         {
             int numberOfAttacks = 2; // Número de CircleAttacks a serem instanciados
-            float spawnRadius = 3f; // Raio ao redor do Boss para spawnar os ataques
+            float spawnRadius = 1f; // Raio ao redor do Boss para spawnar os ataques
 
             for (int i = 0; i < numberOfAttacks; i++)
             {

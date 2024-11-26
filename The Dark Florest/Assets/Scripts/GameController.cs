@@ -34,7 +34,8 @@ public class GameController : MonoBehaviour
     void Start()
     {
         moedas = 0;
-        UpdateMoedaTXT(); 
+        UpdateMoedaTXT();
+        Cursor.visible = false;
     }
 
     void Update()
