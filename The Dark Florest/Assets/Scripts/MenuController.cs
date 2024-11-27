@@ -19,6 +19,7 @@ public class MenuController : MonoBehaviour
         {
             videoPanel.SetActive(true); // Ativa o painel do vídeo
             DisableMenuButtons(); // Desativa os botões do menu
+            
         }
     }
 

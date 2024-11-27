@@ -442,7 +442,8 @@ public class Player : MonoBehaviour
 
     private IEnumerator RestoreCheckpoint()
     {
-        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
 
         // Restaura a posição do jogador para o último checkpoint
         transform.position = CheckpointManager.Instance.lastCheckpointPosition;
@@ -500,6 +501,8 @@ public class Player : MonoBehaviour
         // Verificar se a referência do gameOver é válida
         if (GameController.instance.gameOver != null)
         {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             GameController.instance.gameOver.SetActive(true);
         }
         else

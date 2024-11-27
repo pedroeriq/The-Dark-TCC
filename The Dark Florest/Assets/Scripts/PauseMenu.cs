@@ -9,6 +9,7 @@ public class PauseMenu : MonoBehaviour
 
     void Start()
     {
+        
         // Desativa todas as cartas no início
         foreach (var carta in cartaSprites)
         {
@@ -34,6 +35,8 @@ public class PauseMenu : MonoBehaviour
     public void HidePauseMenu()
     {
         pauseMenuUI.SetActive(false); // Desativa o painel de pause
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void ShowCarta(int cartaIndex)
@@ -46,6 +49,8 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1f; // Restaura o tempo
         pauseMenuUI.SetActive(false); // Desativa o menu de pausa
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void ExitGame()

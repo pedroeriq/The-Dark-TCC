@@ -36,6 +36,7 @@ public class GameController : MonoBehaviour
         moedas = 0;
         UpdateMoedaTXT();
         Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked; // Corrigido
     }
 
     void Update()
@@ -51,7 +52,12 @@ public class GameController : MonoBehaviour
         Time.timeScale = 0f; 
         pauseMenu.pauseMenuUI.SetActive(true); 
         isPaused = true; 
+
+        // Torna o cursor visível e desbloqueado ao pausar o jogo
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
+
 
     public void ResumeGame()
     {
@@ -61,6 +67,8 @@ public class GameController : MonoBehaviour
         {
             pauseMenu.HidePauseMenu(); 
         }
+
+        // Oculta e bloqueia o cursor ao retornar ao jog
     }
 
     public void AddMoeda()
