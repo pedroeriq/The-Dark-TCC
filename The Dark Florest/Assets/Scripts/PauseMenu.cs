@@ -47,10 +47,11 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        Time.timeScale = 1f; // Restaura o tempo
-        pauseMenuUI.SetActive(false); // Desativa o menu de pausa
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1f; // Restaura o tempo
+        pauseMenuUI.SetActive(false); // Desativa o menu de pausa
+        
     }
 
     public void ExitGame()
