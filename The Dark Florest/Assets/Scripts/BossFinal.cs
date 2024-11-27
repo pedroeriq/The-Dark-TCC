@@ -266,34 +266,33 @@ public class BossFinal : MonoBehaviour
     
 
     private void SpawnCircleAttack()
+{
+    if (circleAttackPrefab != null && player != null)
     {
-        if (circleAttackPrefab != null && player != null)
+        int numberOfAttacks = 2; // Número de CircleAttacks a serem instanciados
+        float spawnRadius = 1f; // Raio ao redor do Boss para spawnar os ataques
+
+        for (int i = 0; i < numberOfAttacks; i++)
         {
-            int numberOfAttacks = 2; // Número de CircleAttacks a serem instanciados
-            float spawnRadius = 1f; // Raio ao redor do Boss para spawnar os ataques
+            // Gera uma posição aleatória dentro do raio definido
+            Vector3 randomOffset = Random.insideUnitCircle * spawnRadius;
+            Vector3 spawnPosition = transform.position + randomOffset;
 
-            for (int i = 0; i < numberOfAttacks; i++)
+            // Calcula a direção do jogador em relação à posição de spawn aleatória
+            Vector3 directionToPlayer = (player.position - spawnPosition).normalized;
+
+            // Instancia o CircleAttack
+            GameObject circleAttack = Instantiate(circleAttackPrefab, spawnPosition, Quaternion.identity);
+
+            // Passa a direção para o script do CircleAttack
+            CircleAttack circleAttackScript = circleAttack.GetComponent<CircleAttack>();
+            if (circleAttackScript != null)
             {
-                // Gera uma posição aleatória dentro do raio definido
-                Vector3 randomOffset = Random.insideUnitCircle * spawnRadius;
-                Vector3 spawnPosition = transform.position + randomOffset;
-
-                // Calcula a direção do jogador
-                Vector3 directionToPlayer = (player.position - spawnPosition).normalized;
-
-                // Instancia o CircleAttack
-                GameObject circleAttack = Instantiate(circleAttackPrefab, spawnPosition, Quaternion.identity);
-
-                // Passa a direção para o script do CircleAttack
-                CircleAttack circleAttackScript = circleAttack.GetComponent<CircleAttack>();
-                if (circleAttackScript != null)
-                {
-                    circleAttackScript.SetDirection(directionToPlayer);
-                }
+                circleAttackScript.SetDirection(directionToPlayer);
             }
         }
-        
     }
+}
     private void DesativarObjetos()
     {
         // Desativa todos os objetos especificados
