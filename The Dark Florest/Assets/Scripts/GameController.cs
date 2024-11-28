@@ -35,19 +35,11 @@ public class GameController : MonoBehaviour
     {
         moedas = 0;
         UpdateMoedaTXT();
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+      
     }
 
     void Update()
     {
-        // Verifica se o jogo não está pausado
-        if (!isPaused)
-        {
-            // Garante que o cursor permaneça oculto e travado durante o jogo
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
 
         // Permite pausar o jogo ao pressionar a tecla ESC
         if (Input.GetKeyDown(KeyCode.Escape) && !isPaused)
@@ -62,10 +54,7 @@ public class GameController : MonoBehaviour
         Time.timeScale = 0f; 
         pauseMenu.pauseMenuUI.SetActive(true); 
         isPaused = true; 
-
-        // Torna o cursor visível e desbloqueado ao pausar o jogo
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        
     }
 
 

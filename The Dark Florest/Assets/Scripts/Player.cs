@@ -442,8 +442,6 @@ public class Player : MonoBehaviour
 
     private IEnumerator RestoreCheckpoint()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
 
         // Restaura a posição do jogador para o último checkpoint
         transform.position = CheckpointManager.Instance.lastCheckpointPosition;
@@ -486,8 +484,7 @@ public class Player : MonoBehaviour
         {
             // Caso contrário, carrega a tela de game over
             StartCoroutine(GameOver());
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            
         }
         
     }
@@ -508,8 +505,7 @@ public class Player : MonoBehaviour
     }
 
     // Habilita o cursor para permitir interação com os botões
-    Cursor.visible = true;
-    Cursor.lockState = CursorLockMode.None;
+    
 }
 
 

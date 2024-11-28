@@ -35,8 +35,7 @@ public class PauseMenu : MonoBehaviour
     public void HidePauseMenu()
     {
         pauseMenuUI.SetActive(false); // Desativa o painel de pause
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        
     }
 
     public void ShowCarta(int cartaIndex)
@@ -47,8 +46,6 @@ public class PauseMenu : MonoBehaviour
 
     public void Resume()
     {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
         Time.timeScale = 1f; // Restaura o tempo
         pauseMenuUI.SetActive(false); // Desativa o menu de pausa
         
