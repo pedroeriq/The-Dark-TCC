@@ -484,6 +484,8 @@ public class Player : MonoBehaviour
         }
         else
         {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             // Caso contrário, carrega a tela de game over
             StartCoroutine(GameOver());
         }
@@ -498,11 +500,10 @@ public class Player : MonoBehaviour
     private IEnumerator GameOver()
     {
         yield return new WaitForSeconds(1f); // Aguarda a duração da animação de morte ou outro tempo desejado
+        
         // Verificar se a referência do gameOver é válida
         if (GameController.instance.gameOver != null)
         {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
             GameController.instance.gameOver.SetActive(true);
         }
         else
