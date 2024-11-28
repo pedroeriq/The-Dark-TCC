@@ -484,10 +484,10 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
             // Caso contrário, carrega a tela de game over
             StartCoroutine(GameOver());
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
         
     }
@@ -498,19 +498,20 @@ public class Player : MonoBehaviour
     }
     // Coroutine para exibir a tela de game over
     private IEnumerator GameOver()
+{
+    yield return new WaitForSeconds(1f); // Aguarda a duração da animação de morte ou outro tempo desejado
+
+    // Exibe a tela de Game Over
+    if (GameController.instance.gameOver != null)
     {
-        yield return new WaitForSeconds(1f); // Aguarda a duração da animação de morte ou outro tempo desejado
-        
-        // Verificar se a referência do gameOver é válida
-        if (GameController.instance.gameOver != null)
-        {
-            GameController.instance.gameOver.SetActive(true);
-        }
-        else
-        {
-            Debug.LogWarning("GameOver não foi encontrado!");
-        }
+        GameController.instance.gameOver.SetActive(true);
     }
+
+    // Habilita o cursor para permitir interação com os botões
+    Cursor.visible = true;
+    Cursor.lockState = CursorLockMode.None;
+}
+
 
     
 
