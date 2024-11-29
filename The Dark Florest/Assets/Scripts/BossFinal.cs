@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class BossFinal : MonoBehaviour
 {
+    public AudioSource chaseSound; // Som para tocar quando o inimigo começar a perseguir o Player
     public AudioSource backgroundMusic; // Referência ao AudioSource que controla o som de fundo
     public GameObject[] objectsToDeactivate; // Lista de GameObjects a serem desativados
     public Transform player; // Referência ao jogador
@@ -76,6 +77,12 @@ public class BossFinal : MonoBehaviour
             if (vidaSlider != null)
             {
                 vidaSlider.gameObject.SetActive(true); // Exibe a barra de vida
+            }
+
+            // **Toca o som de perseguição**
+            if (chaseSound != null && !chaseSound.isPlaying)
+            {
+                chaseSound.Play();
             }
         }
 
