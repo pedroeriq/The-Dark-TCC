@@ -7,6 +7,7 @@ public class BossFinal : MonoBehaviour
 {
     public AudioSource chaseSound; // Som para tocar quando o inimigo começar a perseguir o Player
     public AudioSource backgroundMusic; // Referência ao AudioSource que controla o som de fundo
+    public AudioSource gritoboss;
     public GameObject[] objectsToDeactivate; // Lista de GameObjects a serem desativados
     public Transform player; // Referência ao jogador
     public float chaseSpeed = 4f; // Velocidade ao perseguir o jogador
@@ -267,6 +268,11 @@ public class BossFinal : MonoBehaviour
             {
                 backgroundMusic.mute = true; // Muda o som para mudo
             }
+            if (gritoboss != null)
+            {
+                gritoboss.mute = true; // Muda o som para mudo
+            }
+            
         }
     }
 
